@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="相信大家在学习spark的时候接触的第一个案例肯定也是 wordCount, 本文也想通过这样一个简单的例子来讲一下一个简单的 flink 程序是什么样子的, 让大家对 flink 的代码有一个简单的了解. 一个 flink程序主要分为5个部分:  1. 获取执行 Environment environment 提供控制 job 执行的方法(例如设置并行度/容错/checkpoint 参数) 并且">
+<meta name="description" content="相信大家在学习spark的时候接触的第一个案例肯定也是 wordCount, 本文也想通过这样一个简单的例子来讲一下一个简单的 flink 程序是什么样子的, 让大家对 flink 的代码有一个简单的了解. 一个 flink程序主要分为5个部分:  1. 获取执行 Environment  environment 提供控制 job 执行的方法(例如设置并行度/容错/checkpoint 参数) 并">
 <meta property="og:type" content="article">
 <meta property="og:title" content="flink使用02-从WordCount开始">
 <meta property="og:url" content="https://xinze.fun/2019/09/03/flink使用02-从WordCount开始/index.html">
 <meta property="og:site_name" content="xinzeBlog">
-<meta property="og:description" content="相信大家在学习spark的时候接触的第一个案例肯定也是 wordCount, 本文也想通过这样一个简单的例子来讲一下一个简单的 flink 程序是什么样子的, 让大家对 flink 的代码有一个简单的了解. 一个 flink程序主要分为5个部分:  1. 获取执行 Environment environment 提供控制 job 执行的方法(例如设置并行度/容错/checkpoint 参数) 并且">
+<meta property="og:description" content="相信大家在学习spark的时候接触的第一个案例肯定也是 wordCount, 本文也想通过这样一个简单的例子来讲一下一个简单的 flink 程序是什么样子的, 让大家对 flink 的代码有一个简单的了解. 一个 flink程序主要分为5个部分:  1. 获取执行 Environment  environment 提供控制 job 执行的方法(例如设置并行度/容错/checkpoint 参数) 并">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://xinze.fun/2019/09/03/flink使用02-从WordCount开始/%E6%95%B0%E6%8D%AE%E6%BA%90%E6%8E%A5%E5%85%A5%E6%96%B9%E6%B3%95.png">
-<meta property="og:updated_time" content="2019-09-03T13:08:01.529Z">
+<meta property="og:updated_time" content="2019-09-03T13:09:21.622Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="flink使用02-从WordCount开始">
-<meta name="twitter:description" content="相信大家在学习spark的时候接触的第一个案例肯定也是 wordCount, 本文也想通过这样一个简单的例子来讲一下一个简单的 flink 程序是什么样子的, 让大家对 flink 的代码有一个简单的了解. 一个 flink程序主要分为5个部分:  1. 获取执行 Environment environment 提供控制 job 执行的方法(例如设置并行度/容错/checkpoint 参数) 并且">
+<meta name="twitter:description" content="相信大家在学习spark的时候接触的第一个案例肯定也是 wordCount, 本文也想通过这样一个简单的例子来讲一下一个简单的 flink 程序是什么样子的, 让大家对 flink 的代码有一个简单的了解. 一个 flink程序主要分为5个部分:  1. 获取执行 Environment  environment 提供控制 job 执行的方法(例如设置并行度/容错/checkpoint 参数) 并">
 <meta name="twitter:image" content="https://xinze.fun/2019/09/03/flink使用02-从WordCount开始/%E6%95%B0%E6%8D%AE%E6%BA%90%E6%8E%A5%E5%85%A5%E6%96%B9%E6%B3%95.png">
 
 
@@ -356,9 +356,10 @@
         <p>相信大家在学习spark的时候接触的第一个案例肯定也是 wordCount, 本文也想通过这样一个简单的例子来讲一下一个简单的 flink 程序是什么样子的, 让大家对 flink 的代码有一个简单的了解.</p>
 <p>一个 flink程序主要分为5个部分:</p>
 <ul>
-<li><p><strong>1. 获取执行 Environment</strong></p>
+<li><strong>1. 获取执行 Environment</strong></li>
+</ul>
 <p>environment 提供控制 job 执行的方法(例如设置并行度/容错/checkpoint 参数) 并且与外部系统做交互. flink可以做流计算也可以做批计算, 对应的也就有不同的environment , 在使用时根据不同的使用场景选择即可.</p>
-</li>
+<ul>
 <li><p><strong>2. 获取输入流 Source</strong></p>
 <p>一个流式计算框架自然是少不了数据的输入, 在 streamExecutionEnvironment 的可以看到有很多种创建输入流的方式, 不过在项目中使用最多的还是使用 addSource()方法来添加不同的数据源接入</p>
 <p><img src="/2019/09/03/flink使用02-从WordCount开始/%E6%95%B0%E6%8D%AE%E6%BA%90%E6%8E%A5%E5%85%A5%E6%96%B9%E6%B3%95.png" alt></p>
