@@ -87,7 +87,7 @@
 <meta property="og:description" content="相信大家在学习spark的时候接触的第一个案例肯定也是 wordCount, 本文也想通过这样一个简单的例子来讲一下一个简单的 flink 程序是什么样子的, 让大家对 flink 的代码有一个简单的了解. 一个 flink程序主要分为5个部分:  1. 获取执行 Environment  environment 提供控制 job 执行的方法(例如设置并行度/容错/checkpoint 参数) 并">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://xinze.fun/2019/09/03/flink使用02-从WordCount开始/%E6%95%B0%E6%8D%AE%E6%BA%90%E6%8E%A5%E5%85%A5%E6%96%B9%E6%B3%95.png">
-<meta property="og:updated_time" content="2019-09-03T13:09:21.622Z">
+<meta property="og:updated_time" content="2019-09-03T13:10:16.709Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="flink使用02-从WordCount开始">
 <meta name="twitter:description" content="相信大家在学习spark的时候接触的第一个案例肯定也是 wordCount, 本文也想通过这样一个简单的例子来讲一下一个简单的 flink 程序是什么样子的, 让大家对 flink 的代码有一个简单的了解. 一个 flink程序主要分为5个部分:  1. 获取执行 Environment  environment 提供控制 job 执行的方法(例如设置并行度/容错/checkpoint 参数) 并">
@@ -371,7 +371,8 @@
 <p>在完成数据计算之后,就需要有一个输出的地方, 通常来讲也是通过 addSink() 方法来添加不同的数据输出目标,也可以通过 print() 来直接查看输出或者写入到csv等外部文件.</p>
 </li>
 <li><p><strong>5. 启动 flink,提交 job</strong></p>
-<h4 id="一个-flink-代码的启动执行-必须通过-env-executor-方法-这行代码主要做了以下事情"><a href="#一个-flink-代码的启动执行-必须通过-env-executor-方法-这行代码主要做了以下事情" class="headerlink" title="一个 flink 代码的启动执行, 必须通过 env.executor() 方法.这行代码主要做了以下事情:"></a>一个 flink 代码的启动执行, 必须通过 env.executor() 方法.这行代码主要做了以下事情:</h4><ol>
+<p>一个 flink 代码的启动执行, 必须通过 env.executor() 方法.这行代码主要做了以下事情:</p>
+<ol>
 <li>生成StreamGraph </li>
 <li>生成JobGraph. </li>
 <li>生成一系列配置</li>
@@ -538,7 +539,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#一个-flink-代码的启动执行-必须通过-env-executor-方法-这行代码主要做了以下事情"><span class="nav-number">1.</span> <span class="nav-text">一个 flink 代码的启动执行, 必须通过 env.executor() 方法.这行代码主要做了以下事情:</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#以下为简单的-WordCount-代码"><span class="nav-number">2.</span> <span class="nav-text">以下为简单的 WordCount 代码</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#以下为简单的-WordCount-代码"><span class="nav-number">1.</span> <span class="nav-text">以下为简单的 WordCount 代码</span></a></li></ol></div>
             
 
           </div>

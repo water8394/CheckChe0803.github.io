@@ -370,7 +370,8 @@
 <p>在完成数据计算之后,就需要有一个输出的地方, 通常来讲也是通过 addSink() 方法来添加不同的数据输出目标,也可以通过 print() 来直接查看输出或者写入到csv等外部文件.</p>
 </li>
 <li><p><strong>5. 启动 flink,提交 job</strong></p>
-<h4 id="一个-flink-代码的启动执行-必须通过-env-executor-方法-这行代码主要做了以下事情"><a href="#一个-flink-代码的启动执行-必须通过-env-executor-方法-这行代码主要做了以下事情" class="headerlink" title="一个 flink 代码的启动执行, 必须通过 env.executor() 方法.这行代码主要做了以下事情:"></a>一个 flink 代码的启动执行, 必须通过 env.executor() 方法.这行代码主要做了以下事情:</h4><ol>
+<p>一个 flink 代码的启动执行, 必须通过 env.executor() 方法.这行代码主要做了以下事情:</p>
+<ol>
 <li>生成StreamGraph </li>
 <li>生成JobGraph. </li>
 <li>生成一系列配置</li>
