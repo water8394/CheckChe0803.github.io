@@ -79,19 +79,20 @@
 
 
 
-<meta name="description" content="在做实时计算的时候, 首先就需要搞清楚一个问题, 这个实时到底是怎么样的一个时间概念. 在 Flink 中, 总共有3种时间概念, 分别是 事件时间 ( Event time ) / 处理时间 ( Processing time ) / 接入时间 ( Ingestion time).  事件时间 ( Event time )就是真实的用户发生操作的时候所产生的时间, 对应到 flink 中, 需要">
+<meta name="description" content="时间概念在做实时计算的时候, 首先就需要搞清楚一个问题, 这个实时到底是怎么样的一个时间概念. 在 Flink 中, 总共有3种时间概念, 分别是 事件时间 ( Event time ) / 处理时间 ( Processing time ) / 接入时间 ( Ingestion time).  事件时间 ( Event time )就是真实的用户发生操作的时候所产生的时间, 对应到 flink 中">
 <meta property="og:type" content="article">
 <meta property="og:title" content="flink使用04-几种时间概念和watermark">
 <meta property="og:url" content="https://xinze.fun/2019/09/24/flink使用04-几种时间概念和watermark/index.html">
 <meta property="og:site_name" content="xinze&#39;s Blog">
-<meta property="og:description" content="在做实时计算的时候, 首先就需要搞清楚一个问题, 这个实时到底是怎么样的一个时间概念. 在 Flink 中, 总共有3种时间概念, 分别是 事件时间 ( Event time ) / 处理时间 ( Processing time ) / 接入时间 ( Ingestion time).  事件时间 ( Event time )就是真实的用户发生操作的时候所产生的时间, 对应到 flink 中, 需要">
+<meta property="og:description" content="时间概念在做实时计算的时候, 首先就需要搞清楚一个问题, 这个实时到底是怎么样的一个时间概念. 在 Flink 中, 总共有3种时间概念, 分别是 事件时间 ( Event time ) / 处理时间 ( Processing time ) / 接入时间 ( Ingestion time).  事件时间 ( Event time )就是真实的用户发生操作的时候所产生的时间, 对应到 flink 中">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://xinze.fun/2019/09/24/flink使用04-几种时间概念和watermark/D:%5CCode%5C%E5%B8%B8%E7%94%A8%E7%BB%84%E4%BB%B6%5Chexo%5CxinzeBlog%5Csource_posts%5Cflink%E4%BD%BF%E7%94%A804-%E5%87%A0%E7%A7%8D%E6%97%B6%E9%97%B4%E6%A6%82%E5%BF%B5%E5%92%8Cwatermark%5C%E6%97%B6%E9%97%B4%E7%9A%84%E6%A6%82%E5%BF%B5.png">
-<meta property="og:updated_time" content="2019-09-24T14:09:00.322Z">
+<meta property="og:image" content="https://xinze.fun/2019/09/24/flink使用04-几种时间概念和watermark/%E6%97%B6%E9%97%B4%E7%9A%84%E6%A6%82%E5%BF%B5.png">
+<meta property="og:image" content="https://xinze.fun/2019/09/24/flink使用04-几种时间概念和watermark/watermark.gif">
+<meta property="og:updated_time" content="2019-09-24T15:08:38.209Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="flink使用04-几种时间概念和watermark">
-<meta name="twitter:description" content="在做实时计算的时候, 首先就需要搞清楚一个问题, 这个实时到底是怎么样的一个时间概念. 在 Flink 中, 总共有3种时间概念, 分别是 事件时间 ( Event time ) / 处理时间 ( Processing time ) / 接入时间 ( Ingestion time).  事件时间 ( Event time )就是真实的用户发生操作的时候所产生的时间, 对应到 flink 中, 需要">
-<meta name="twitter:image" content="https://xinze.fun/2019/09/24/flink使用04-几种时间概念和watermark/D:%5CCode%5C%E5%B8%B8%E7%94%A8%E7%BB%84%E4%BB%B6%5Chexo%5CxinzeBlog%5Csource_posts%5Cflink%E4%BD%BF%E7%94%A804-%E5%87%A0%E7%A7%8D%E6%97%B6%E9%97%B4%E6%A6%82%E5%BF%B5%E5%92%8Cwatermark%5C%E6%97%B6%E9%97%B4%E7%9A%84%E6%A6%82%E5%BF%B5.png">
+<meta name="twitter:description" content="时间概念在做实时计算的时候, 首先就需要搞清楚一个问题, 这个实时到底是怎么样的一个时间概念. 在 Flink 中, 总共有3种时间概念, 分别是 事件时间 ( Event time ) / 处理时间 ( Processing time ) / 接入时间 ( Ingestion time).  事件时间 ( Event time )就是真实的用户发生操作的时候所产生的时间, 对应到 flink 中">
+<meta name="twitter:image" content="https://xinze.fun/2019/09/24/flink使用04-几种时间概念和watermark/%E6%97%B6%E9%97%B4%E7%9A%84%E6%A6%82%E5%BF%B5.png">
 
 
 
@@ -353,10 +354,15 @@
       
 
       
-        <p>在做实时计算的时候, 首先就需要搞清楚一个问题, 这个实时到底是怎么样的一个时间概念. 在 Flink 中, 总共有3种时间概念, 分别是 <strong>事件时间</strong> ( Event time ) / <strong>处理时间</strong> ( Processing time ) / <strong>接入时间</strong> ( Ingestion time).</p>
-<p><img src="/2019/09/24/flink使用04-几种时间概念和watermark/D:%5CCode%5C%E5%B8%B8%E7%94%A8%E7%BB%84%E4%BB%B6%5Chexo%5CxinzeBlog%5Csource_posts%5Cflink%E4%BD%BF%E7%94%A804-%E5%87%A0%E7%A7%8D%E6%97%B6%E9%97%B4%E6%A6%82%E5%BF%B5%E5%92%8Cwatermark%5C%E6%97%B6%E9%97%B4%E7%9A%84%E6%A6%82%E5%BF%B5.png" alt></p>
+        <h3 id="时间概念"><a href="#时间概念" class="headerlink" title="时间概念"></a>时间概念</h3><p>在做实时计算的时候, 首先就需要搞清楚一个问题, 这个实时到底是怎么样的一个时间概念. 在 Flink 中, 总共有3种时间概念, 分别是 <strong>事件时间</strong> ( Event time ) / <strong>处理时间</strong> ( Processing time ) / <strong>接入时间</strong> ( Ingestion time).</p>
+<p><img src="/2019/09/24/flink使用04-几种时间概念和watermark/%E6%97%B6%E9%97%B4%E7%9A%84%E6%A6%82%E5%BF%B5.png" alt></p>
 <p><strong>事件时间</strong> ( Event time )就是真实的用户发生操作的时候所产生的时间, 对应到 flink 中, 需要用户 <strong>显示</strong> 的告诉 flink 到底每个输入中的哪一个字段代表这个事件时间。</p>
 <p><strong>接入时间</strong> ( Ingestion time) 和<strong>处理时间</strong> ( Processing time )是不需要用户去指定的, flink自己会去处理这个时间. 接入时间的代表的是一个事件通过 source Operator 的时间, 相比于 event time, ingestion time 不能处理乱序事件, 因此也就不用生成对应的watermark. 处理时间是指事件在操作算子计算过程中获取到的所在主机的时间. processing time 适合用于时间计算精度要求不是特别高的计算场景, 例如统计某些延时非常高的日志数据.</p>
+<hr>
+<h3 id="水位线机制-watermark"><a href="#水位线机制-watermark" class="headerlink" title="水位线机制 watermark"></a>水位线机制 watermark</h3><h4 id="1-解释-watermark"><a href="#1-解释-watermark" class="headerlink" title="1, 解释 watermark"></a>1, 解释 watermark</h4><p>watermark 这个概念在 flink 中是与 event time 这个时间概念相互依存的, 其目的是为了解决数据乱序到达和系统延迟的问题. flink会把读取进系统的最新事件时间减去固定的时间间隔作为 watermark. 还是用一张图来解释watermark 的作用.</p>
+<p>当事件进入 flink 中的时候, 根据提取的 event time 产生 watermark 时间戳, 记为 X, 进入 flink 中的 event time 记为 Y. 当窗口的 end time &lt; X 的时候, 则触发窗口计算结果并输出. 只要 X &lt; end time, 那么 事件就可以 一直进入到当前窗口中, 这样的话即便发生乱序, 也可以在窗口中调整. 调整的方法就是按照 Y. </p>
+<p><img src="/2019/09/24/flink使用04-几种时间概念和watermark/watermark.gif" alt></p>
+<p>2, 使用</p>
 
       
     </div>
@@ -441,8 +447,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -493,6 +508,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#时间概念"><span class="nav-number">1.</span> <span class="nav-text">时间概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#水位线机制-watermark"><span class="nav-number">2.</span> <span class="nav-text">水位线机制 watermark</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-解释-watermark"><span class="nav-number">2.1.</span> <span class="nav-text">1, 解释 watermark</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
