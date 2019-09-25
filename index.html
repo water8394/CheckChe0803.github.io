@@ -5,7 +5,7 @@
   
 
 
-<html class="theme-next gemini use-motion" lang="zh-Hans">
+<html class="theme-next pisces use-motion" lang="zh-Hans">
 <head><meta name="generator" content="Hexo 3.9.0">
   <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -100,7 +100,7 @@
   var NexT = window.NexT || {};
   var CONFIG = {
     root: '/',
-    scheme: 'Gemini',
+    scheme: 'Pisces',
     version: '5.1.4',
     sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
     fancybox: true,
@@ -193,16 +193,6 @@
               <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
             
             首页
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-about">
-          <a href="/about/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
-            
-            关于
           </a>
         </li>
       
@@ -364,8 +354,7 @@
           
           时间概念在做实时计算的时候, 首先就需要搞清楚一个问题, 这个实时到底是怎么样的一个时间概念. 在 Flink 中, 总共有3种时间概念, 分别是 事件时间 ( Event time ) / 处理时间 ( Processing time ) / 接入时间 ( Ingestion time).
 
-事件时间 ( Event time )就是真实的用户发生操作的时候所产生的时间, 对应到 flink 中, 需要用户 显示 的告诉 flink 到底每个输入中的哪一个字段代表这个事件时间。
-接入时间 ( 
+事件
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -516,7 +505,7 @@
           flink的数据输入源主要分为两大类:1. 内置数据源
 集合数据源
 可以将数组或者集合作为 flink 的数据源,分别有不同的方法可以使用, 这种方式比较适合本地调试使用
-12345678// 添加数组作为数据输入源String[] elementInput = new String[]&#123;&quot;hello Flink&quot;, &quot;Second Line&quot;&#125;;DataStream&lt;String&gt; text = env.fromEleme
+12345678// 添加数组作为数据输入源String[] elementInput = new String[]&#123;
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -669,7 +658,7 @@
 
 1. 获取执行 Environment
 
-environment 提供控制 job 执行的方法(例如设置并行度/容错/checkpoint 参数) 并且与外部系统做交互. flink可以做流计算也可以做批计算, 对应的也就有不同的environmen
+envi
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -818,11 +807,8 @@ environment 提供控制 job 执行的方法(例如设置并行度/容错/checkp
         
           
           ​    Flink 是一款能够同时支持高吞吐/低延迟/高性能的分布式处理框架.
-​    本系列叫做 &lt;Flink简易使用教程&gt;,  目的是记录自己学习 flink 的过程,并且把使用flink的方方面面介绍给大家.尽量用简单的话把使用方法说清楚,在使用某个具体功能的时候能够快速的查找到该使用方法.
-​    本系列的主要例子会从 flink 官方仓库的 example 出发, 通过这些代码来使用 flink 的一些基本操作.
-
-
-          
+​    本系列叫做 &lt;Flink简易使用教程&gt;,  目的是记录自己学习 flink 的过程,并且把使用flink的方方面面介绍给大家.尽量用简单的话把使用方法说清楚,在使用某个具体功能的时候能够快速的查找
+          ...
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2019/09/03/flink使用01-本系列简介/#more" rel="contents">
@@ -975,7 +961,8 @@ environment 提供控制 job 执行的方法(例如设置并行度/容错/checkp
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+        <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
 <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
@@ -986,19 +973,17 @@ environment 提供控制 job 执行的方法(例如设置并行度/容错/checkp
 </div>
 
 
-  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
 
 
 
-  <span class="post-meta-divider">|</span>
-
-
-
-  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
 
 
 
 -->
+<div class="powered-by">
+<i class="fa fa-user-md"></i><span id="busuanzi_container_site_pv">
+    本站总访问量<span id="busuanzi_value_site_pv"></span>次
+</span>
 <div class="theme-info">
   <div class="powered-by"></div>
   <span class="post-count">博客全站共2.5k字</span>
@@ -1013,7 +998,7 @@ environment 提供控制 job 执行的方法(例如设置并行度/容错/checkp
 
         
       </div>
-    </footer>
+    </div></footer>
 
     
       <div class="back-to-top">
