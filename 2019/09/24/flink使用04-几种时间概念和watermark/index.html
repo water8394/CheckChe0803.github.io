@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="时间概念在做实时计算的时候, 首先就需要搞清楚一个问题, 这个实时到底是怎么样的一个时间概念. 在 Flink 中, 总共有3种时间概念, 分别是 事件时间 ( Event time ) / 处理时间 ( Processing time ) / 接入时间 ( Ingestion time).  事件时间 ( Event time )就是真实的用户发生操作的时候所产生的时间, 对应到 flink 中">
+<meta property="og:type" content="article">
+<meta property="og:title" content="flink使用04-几种时间概念和watermark">
+<meta property="og:url" content="https://xinze.fun/2019/09/24/flink使用04-几种时间概念和watermark/index.html">
+<meta property="og:site_name" content="xinze&#39;s Blog">
+<meta property="og:description" content="时间概念在做实时计算的时候, 首先就需要搞清楚一个问题, 这个实时到底是怎么样的一个时间概念. 在 Flink 中, 总共有3种时间概念, 分别是 事件时间 ( Event time ) / 处理时间 ( Processing time ) / 接入时间 ( Ingestion time).  事件时间 ( Event time )就是真实的用户发生操作的时候所产生的时间, 对应到 flink 中">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://xinze.fun/2019/09/24/flink使用04-几种时间概念和watermark/%E6%97%B6%E9%97%B4%E7%9A%84%E6%A6%82%E5%BF%B5.png">
+<meta property="og:image" content="https://xinze.fun/2019/09/24/flink使用04-几种时间概念和watermark/watermark.gif">
+<meta property="og:updated_time" content="2019-09-24T16:12:05.589Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="flink使用04-几种时间概念和watermark">
+<meta name="twitter:description" content="时间概念在做实时计算的时候, 首先就需要搞清楚一个问题, 这个实时到底是怎么样的一个时间概念. 在 Flink 中, 总共有3种时间概念, 分别是 事件时间 ( Event time ) / 处理时间 ( Processing time ) / 接入时间 ( Ingestion time).  事件时间 ( Event time )就是真实的用户发生操作的时候所产生的时间, 对应到 flink 中">
+<meta name="twitter:image" content="https://xinze.fun/2019/09/24/flink使用04-几种时间概念和watermark/%E6%97%B6%E9%97%B4%E7%9A%84%E6%A6%82%E5%BF%B5.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://xinze.fun/2019/09/24/flink使用04-几种时间概念和watermark/">
+
+
+
+
+
+  <title>flink使用04-几种时间概念和watermark | xinze's Blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband">
+      
+      <a href="https://github.com/CheckChe0803" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewbox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"/><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"/><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"/></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+    </div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">xinze's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://xinze.fun/2019/09/24/flink使用04-几种时间概念和watermark/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="xinze">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="xinze's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">flink使用04-几种时间概念和watermark</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-24T19:39:25+08:00">
+                2019-09-24
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/flink/" itemprop="url" rel="index">
+                    <span itemprop="name">flink</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="时间概念"><a href="#时间概念" class="headerlink" title="时间概念"></a>时间概念</h3><p>在做实时计算的时候, 首先就需要搞清楚一个问题, 这个实时到底是怎么样的一个时间概念. 在 Flink 中, 总共有3种时间概念, 分别是 <strong>事件时间</strong> ( Event time ) / <strong>处理时间</strong> ( Processing time ) / <strong>接入时间</strong> ( Ingestion time).</p>
+<p><img src="/2019/09/24/flink使用04-几种时间概念和watermark/%E6%97%B6%E9%97%B4%E7%9A%84%E6%A6%82%E5%BF%B5.png" alt></p>
+<p><strong>事件时间</strong> ( Event time )就是真实的用户发生操作的时候所产生的时间, 对应到 flink 中, 需要用户 <strong>显示</strong> 的告诉 flink 到底每个输入中的哪一个字段代表这个事件时间。</p>
+<p><strong>接入时间</strong> ( Ingestion time) 和<strong>处理时间</strong> ( Processing time )是不需要用户去指定的, flink自己会去处理这个时间. 接入时间的代表的是一个事件通过 source Operator 的时间, 相比于 event time, ingestion time 不能处理乱序事件, 因此也就不用生成对应的watermark. 处理时间是指事件在操作算子计算过程中获取到的所在主机的时间. processing time 适合用于时间计算精度要求不是特别高的计算场景, 例如统计某些延时非常高的日志数据.</p>
+<hr>
+<h3 id="水位线机制-watermark"><a href="#水位线机制-watermark" class="headerlink" title="水位线机制 watermark"></a>水位线机制 watermark</h3><h4 id="1-解释-watermark"><a href="#1-解释-watermark" class="headerlink" title="1, 解释 watermark"></a>1, 解释 watermark</h4><p>watermark 这个概念在 flink 中是与 event time 这个时间概念相互依存的, 其目的是为了解决数据乱序到达和系统延迟的问题. flink会把读取进系统的最新事件时间减去固定的时间间隔作为 watermark. 还是用一张图来解释watermark 的作用.</p>
+<p>当事件进入 flink 中的时候, 根据提取的 event time 产生 watermark 时间戳, 记为 X, 进入 flink 中的 event time 记为 Y. 当窗口的 end time &lt; X 的时候, 则触发窗口计算结果并输出. 只要 X &lt; end time, 那么 事件就可以 一直进入到当前窗口中, 这样的话即便发生乱序, 也可以在窗口中调整. 调整的方法就是按照 Y. </p>
+<p><img src="/2019/09/24/flink使用04-几种时间概念和watermark/watermark.gif" alt></p>
+<h4 id="2-使用-watermark"><a href="#2-使用-watermark" class="headerlink" title="2, 使用 watermark"></a>2, 使用 watermark</h4><p> a. 在 Source Function 中 直接指定 Timestamps 和 Watermark</p>
+<p>​    用户需要复写 SourceFunction 接口中 run( ) 方法实现数据逻辑, 同时调用 SourceContext 的 collectWithTimestamp( ) 方法生成 event time 时间戳, 调用 emitWatermark( ) 方法生成 watermark.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">DataStream&lt;String&gt; text = env.addSource(<span class="keyword">new</span> SourceFunction&lt;String&gt;() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">(SourceContext&lt;String&gt; ctx)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">                <span class="keyword">for</span> (String s : elementInput) &#123;</span><br><span class="line">                    <span class="comment">// 切割每一条数据</span></span><br><span class="line">                    String[] inp = s.split(<span class="string">","</span>);</span><br><span class="line">                    Long timestamp = <span class="keyword">new</span> Long(inp[<span class="number">1</span>]);</span><br><span class="line">                    <span class="comment">// 生成 event time 时间戳</span></span><br><span class="line">                    ctx.collectWithTimestamp(s, timestamp);</span><br><span class="line">                    <span class="comment">// 调用 emitWatermark() 方法生成 watermark, 最大延迟设定为 2</span></span><br><span class="line">                    ctx.emitWatermark(<span class="keyword">new</span> Watermark(timestamp - <span class="number">2</span>));</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="comment">// 设定默认 watermark</span></span><br><span class="line">                ctx.emitWatermark(<span class="keyword">new</span> Watermark(Long.MAX_VALUE));</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">cancel</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br></pre></td></tr></table></figure>
+
+<p>b. 通过 Flink 自带的 Timestamp Assigner 指定 Timestamp 和 生成 watermark </p>
+<p>在使用了 flink 定义的外部数据源( 如 kafka) 之后, 就不能通过自定义 sourcefunction 的方式来生成 watermark 和 event time 了, 这个时候可以使用 Timestamp Assigner,  其需要在第一个时间相关的 Operator前使用. Flink 有自己定义好的 Timestamp Assigner 可以直接使用 (包括直接指定的方式和固定时间延迟的方式 ).Flink 将 watermark 分为 Periodic Watermarks (根据设定的时间间隔周期性的生成) 和 Punctuated Watermarks (根据接入数量生成), 用户也可以继承对应的类实现这两种 watermark.</p>
+<p>b.1 使用 Ascending Timestamp Assigner 指定 Timestamps 和 Watermark</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 首先需要指定系统时间概念为 event time</span></span><br><span class="line">env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);</span><br><span class="line"><span class="comment">// 使用 Ascending 分配 时间信息和 watermark</span></span><br><span class="line">   DataStream&lt;Tuple2&lt;String, Long&gt;&gt; text = env.fromCollection(collectionInput);</span><br><span class="line">   text.assignTimestampsAndWatermarks(<span class="keyword">new</span> AscendingTimestampExtractor&lt;Tuple2&lt;String, Long&gt;&gt;() &#123;</span><br><span class="line">   	<span class="meta">@Override</span></span><br><span class="line">   	<span class="function"><span class="keyword">public</span> <span class="keyword">long</span> <span class="title">extractAscendingTimestamp</span><span class="params">(Tuple2&lt;String, Long&gt; element)</span> </span>&#123;</span><br><span class="line">   	<span class="keyword">return</span> element.f1;</span><br><span class="line">   	&#125;</span><br><span class="line">   &#125;);</span><br></pre></td></tr></table></figure>
+
+<p>b.2 使用固定时延间隔的 Timestamp Assigner 指定</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 使用 Ascending 分配 时间信息和 watermark 设定10s 代表最长的时延</span></span><br><span class="line">    DataStream&lt;Tuple2&lt;String, Long&gt;&gt; text = env.fromCollection(collectionInput);</span><br><span class="line">    text.assignTimestampsAndWatermarks(<span class="keyword">new</span> BoundedOutOfOrdernessTimestampExtractor&lt;Tuple2&lt;String, Long&gt;&gt;(Time.seconds(<span class="number">10</span>)) &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">long</span> <span class="title">extractTimestamp</span><span class="params">(Tuple2&lt;String, Long&gt; element)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> element.f1;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br></pre></td></tr></table></figure>
+
+<p>c. 自定义 Timestamp Assigner 和 Watermark Generator</p>
+<p>用户可以自定义实现 AssignerWithPeriodicWatermarks 和 AssignerWithPunctuatedWatermarks 两个接口来分别生成对应的两种 watermark. 这一块用的比较少, 以后有机会再细写.</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/09/04/flink使用03-数据输入的几种不同方法/" rel="next" title="flink使用03-数据输入的几种不同方法">
+                <i class="fa fa-chevron-left"></i> flink使用03-数据输入的几种不同方法
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">xinze</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/CheckChe0803" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:1050748528@qq.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#时间概念"><span class="nav-number">1.</span> <span class="nav-text">时间概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#水位线机制-watermark"><span class="nav-number">2.</span> <span class="nav-text">水位线机制 watermark</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-解释-watermark"><span class="nav-number">2.1.</span> <span class="nav-text">1, 解释 watermark</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-使用-watermark"><span class="nav-number">2.2.</span> <span class="nav-text">2, 使用 watermark</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xinze</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共2.5k字</span>
+</div>
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
