@@ -75,7 +75,7 @@
 
 
 
-  <meta name="keywords" content="flink,window,">
+  <meta name="keywords" content="flink,join,">
 
 
 
@@ -86,18 +86,18 @@
 
 
 
-<meta name="description" content="1. 窗口组成简介窗口是流式计算中非常重要的一个概念, 很多常见的功能都是通过各种窗口实现的, 比如每5分钟统计一下刚去1小时的热度. Flink DataStream API 将窗口独立成 Operator. 每个窗口算子包含了以下几个部分: Windows Assigner指定窗口的类型, 定义如何将数据流分配到一个或者多个窗口 Windows Trigger指定窗口触发的时机, 定义窗口满足">
-<meta name="keywords" content="flink,window">
+<meta name="description" content="Flink 中支持窗口上的多流合并, 需要保证的是输入的 stream 要构建在相同的 Window 上, 并使用相同类型的 Key 作为关联条件.代码如下所示, 先通过 join 方法将 inputStream1 数据集和 inputStream2 关联, 调用 where( ) 方法指定  inputStream1 的 key, 调用 equalTo( ) 方法指定 inputStream2">
+<meta name="keywords" content="flink,join">
 <meta property="og:type" content="article">
-<meta property="og:title" content="flink使用05-窗口简介和简单的使用">
-<meta property="og:url" content="https://xinze.fun/2019/09/25/flink使用05-窗口简介和简单的使用/index.html">
+<meta property="og:title" content="通过join合并流的操作">
+<meta property="og:url" content="https://xinze.fun/2019/09/27/flink使用07-通过join合并流的操作/index.html">
 <meta property="og:site_name" content="xinze&#39;s Blog">
-<meta property="og:description" content="1. 窗口组成简介窗口是流式计算中非常重要的一个概念, 很多常见的功能都是通过各种窗口实现的, 比如每5分钟统计一下刚去1小时的热度. Flink DataStream API 将窗口独立成 Operator. 每个窗口算子包含了以下几个部分: Windows Assigner指定窗口的类型, 定义如何将数据流分配到一个或者多个窗口 Windows Trigger指定窗口触发的时机, 定义窗口满足">
+<meta property="og:description" content="Flink 中支持窗口上的多流合并, 需要保证的是输入的 stream 要构建在相同的 Window 上, 并使用相同类型的 Key 作为关联条件.代码如下所示, 先通过 join 方法将 inputStream1 数据集和 inputStream2 关联, 调用 where( ) 方法指定  inputStream1 的 key, 调用 equalTo( ) 方法指定 inputStream2">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-09-26T12:21:58.949Z">
+<meta property="og:updated_time" content="2019-09-27T06:10:01.823Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="flink使用05-窗口简介和简单的使用">
-<meta name="twitter:description" content="1. 窗口组成简介窗口是流式计算中非常重要的一个概念, 很多常见的功能都是通过各种窗口实现的, 比如每5分钟统计一下刚去1小时的热度. Flink DataStream API 将窗口独立成 Operator. 每个窗口算子包含了以下几个部分: Windows Assigner指定窗口的类型, 定义如何将数据流分配到一个或者多个窗口 Windows Trigger指定窗口触发的时机, 定义窗口满足">
+<meta name="twitter:title" content="通过join合并流的操作">
+<meta name="twitter:description" content="Flink 中支持窗口上的多流合并, 需要保证的是输入的 stream 要构建在相同的 Window 上, 并使用相同类型的 Key 作为关联条件.代码如下所示, 先通过 join 方法将 inputStream1 数据集和 inputStream2 关联, 调用 where( ) 方法指定  inputStream1 的 key, 调用 equalTo( ) 方法指定 inputStream2">
 
 
 
@@ -127,13 +127,13 @@
 
 
 
-  <link rel="canonical" href="https://xinze.fun/2019/09/25/flink使用05-窗口简介和简单的使用/">
+  <link rel="canonical" href="https://xinze.fun/2019/09/27/flink使用07-通过join合并流的操作/">
 
 
 
 
 
-  <title>flink使用05-窗口简介和简单的使用 | xinze's Blog</title>
+  <title>通过join合并流的操作 | xinze's Blog</title>
   
 
 
@@ -263,7 +263,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://xinze.fun/2019/09/25/flink使用05-窗口简介和简单的使用/">
+    <link itemprop="mainEntityOfPage" href="https://xinze.fun/2019/09/27/flink使用07-通过join合并流的操作/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="xinze">
@@ -280,7 +280,7 @@
 
         
         
-          <h2 class="post-title" itemprop="name headline">flink使用05-窗口简介和简单的使用</h2>
+          <h2 class="post-title" itemprop="name headline">通过join合并流的操作</h2>
         
 
         <div class="post-meta">
@@ -292,8 +292,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-25T22:50:35+08:00">
-                2019-09-25
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-27T13:14:05+08:00">
+                2019-09-27
               </time>
             
 
@@ -352,34 +352,16 @@
       
 
       
-        <h3 id="1-窗口组成简介"><a href="#1-窗口组成简介" class="headerlink" title="1. 窗口组成简介"></a>1. 窗口组成简介</h3><p>窗口是流式计算中非常重要的一个概念, 很多常见的功能都是通过各种窗口实现的, 比如每5分钟统计一下刚去1小时的热度. Flink DataStream API 将窗口独立成 Operator. 每个窗口算子包含了以下几个部分:</p>
-<h4 id="Windows-Assigner"><a href="#Windows-Assigner" class="headerlink" title="Windows Assigner"></a>Windows Assigner</h4><p>指定窗口的类型, 定义如何将数据流分配到一个或者多个窗口</p>
-<h4 id="Windows-Trigger"><a href="#Windows-Trigger" class="headerlink" title="Windows Trigger"></a>Windows Trigger</h4><p>指定窗口触发的时机, 定义窗口满足什么样的条件触发计算</p>
-<h4 id="Evictor"><a href="#Evictor" class="headerlink" title="Evictor"></a>Evictor</h4><p>用户数据剔除</p>
-<h4 id="Lateness"><a href="#Lateness" class="headerlink" title="Lateness"></a>Lateness</h4><p>标记是否处理迟到的数据, 当迟到数据到达窗口中是否触发计算</p>
-<h4 id="Output-Tag"><a href="#Output-Tag" class="headerlink" title="Output Tag"></a>Output Tag</h4><p>标记输出标签, 然后再通过 getSideOutput 将窗口中的数据根据标签输出</p>
-<h4 id="Windows-Function"><a href="#Windows-Function" class="headerlink" title="Windows Function"></a>Windows Function</h4><p>定义窗口上的数据处理的逻辑, 例如对数据进行sum</p>
-<hr>
-<h3 id="2-Window-Assigner"><a href="#2-Window-Assigner" class="headerlink" title="2. Window Assigner"></a>2. Window Assigner</h3><p>首先最需要了解的就是 windows Assigner了, 我们想要一个什么样的窗口划分, 主要就是通过他来实现的. </p>
-<p>根据 flink 上游的数据集是否为 KeyedStream 类型 来做分别的处理. 如果使用了keyBy( ) 则对应使用window( ) 来处理, 否则可以使用 windowAll( )来使用</p>
-<p>Flink 可以支持两种类型的窗口, 分别是基于时间的窗口和基于数量的窗口.基于时间的意思就是按照时间去划分窗口,同理,基于数量的也是根据窗口中的数量来做切分的. 对应的分别就是 timeWindow() 和 countWindow() 来使用, 下面的示例主要使用 timeWindow() 来演示.</p>
-<p>对于不同的 Window Assigner, 还可以把窗口划分为4大类, 分别是 滚动窗口(Tumbling Windows) / 滑动窗口(Sliding Window) / 会话窗口(Session Window) 和 全局窗口(Global Window).</p>
-<h4 id="滚动窗口"><a href="#滚动窗口" class="headerlink" title="滚动窗口"></a>滚动窗口</h4><p>DataStream API 提供基于 EventTime 和 ProcessingTime 的两种类型的 Tumbling window.对应的 Assigner 分别是 TumblingEventTimeWindow 和 ProcessingEventTimeWindow . 举例如下,完整代码见Github.</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 使用ProcessTime的滚动时间窗口, 长度为10s</span></span><br><span class="line">stream.keyBy(x -&gt; x.f1)</span><br><span class="line">    .window(TumblingProcessingTimeWindows.of(Time.seconds(<span class="number">10</span>))).process(...)</span><br><span class="line"><span class="comment">// 使用ProcessTime的滚动时间窗口, 长度为10s</span></span><br><span class="line">stream.keyBy(x -&gt;x.f1).window(TumblingEventTimeWindows.of(Time.seconds(<span class="number">10</span>))).process(...)</span><br></pre></td></tr></table></figure>
+        <p>Flink 中支持窗口上的多流合并, 需要保证的是输入的 stream 要构建在相同的 Window 上, 并使用相同类型的 Key 作为关联条件.代码如下所示, 先通过 join 方法将 inputStream1 数据集和 inputStream2 关联, 调用 where( ) 方法指定  inputStream1 的 key, 调用 equalTo( ) 方法指定 inputStream2 对应关联的 key. 通过 window( ) 方法指定 window Assigner, 最后再通过 apply( ) 方法传入用户自定义的 JoinFunction 或者 FlatJoinFunction 对输入的数据元素做窗口计算.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">inputStream1.join(inputStream2)</span><br><span class="line">			<span class="comment">// 指定inputStream1的关联key</span></span><br><span class="line">			.where(<span class="number">0</span>)</span><br><span class="line">			<span class="comment">// 指定inputStream2的关联key</span></span><br><span class="line">			.equalTo(<span class="number">1</span>)</span><br><span class="line">			<span class="comment">// 指定 window Assigner</span></span><br><span class="line">			.window(TumblingEventTimeWindows.of(Time.seconds(<span class="number">10</span>)))</span><br><span class="line">			<span class="comment">// 指定窗口计算函数</span></span><br><span class="line">			.apply(&lt;JoinFunction&gt;)</span><br></pre></td></tr></table></figure>
 
-<p>使用 window(TumblingProcessingTimeWindows.of(Time.seconds(10))) 的方法有点啰嗦, Flink 还提供了timeWindow( ) 的 API 来简化这一行代码. </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 直接使用 timeWindow API 便可实现滚动窗口的操作, 参数依旧是窗口的长度</span></span><br><span class="line"><span class="comment">// 窗口类型的时间由 time characteristic 确定, 如果指定为 event time,那么窗口也会自动用这个时间</span></span><br><span class="line">input.keyBy(x -&gt; x.f1).timeWindow(Time.seconds(<span class="number">10</span>));</span><br></pre></td></tr></table></figure>
+<p>下面就用 flink 官方仓库中的join example来做演示, 完整代码见仓库 -&gt; <a href="https://github.com/CheckChe0803/flink-simple-tutorial/tree/master/streaming/src/main/java/join" target="_blank" rel="noopener">code link</a></p>
+<p><strong>样例中有两个流, 分别记录的是员工的等级和员工的薪水, 流中数据的格式分别是 (name, grade) / (name, salary), 代码实现的功能是合并两个流, 转变为 (name, grade, salary) 格式的流.</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> <span class="keyword">long</span> windowSize = <span class="number">200L</span>;</span><br><span class="line"><span class="keyword">final</span> <span class="keyword">long</span> rate = <span class="number">3L</span>;</span><br><span class="line"></span><br><span class="line">System.out.println(<span class="string">"Using windowSize="</span> + windowSize + <span class="string">", data rate="</span> + rate);</span><br><span class="line">System.out.println(<span class="string">"To customize example, use: WindowJoin [--windowSize &lt;window-size-in-millis&gt;] [--rate &lt;elements-per-second&gt;]"</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取env, 配置为"ingestion time"</span></span><br><span class="line">StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();</span><br><span class="line">env.setStreamTimeCharacteristic(TimeCharacteristic.IngestionTime);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// 生成 grade 和 salary 两个流 分别是 (name, grade) / (name, salary)</span></span><br><span class="line">DataStream&lt;Tuple2&lt;String, Integer&gt;&gt; grades = WindowJoinSampleData.GradeSource.getSource(env, rate);</span><br><span class="line">DataStream&lt;Tuple2&lt;String, Integer&gt;&gt; salaries = WindowJoinSampleData.SalarySource.getSource(env, rate);</span><br><span class="line"></span><br><span class="line">DataStream&lt;Tuple3&lt;String, Integer, Integer&gt;&gt; joinedStream = runWindowJoin(grades, salaries, windowSize);</span><br><span class="line"></span><br><span class="line">joinedStream.print().setParallelism(<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">env.execute(<span class="string">"Windowed Join Example"</span>);</span><br></pre></td></tr></table></figure>
 
-<h4 id="滑动窗口"><a href="#滑动窗口" class="headerlink" title="滑动窗口"></a>滑动窗口</h4><p>滑动窗口顾名思义就是一个在不断往后滑动的窗口, 比如说 每5分钟 统计一个 最近一小时的时间, 那么就需要用滑动窗口来做处理. 滑动窗口主要是依靠 window size 和 slide time 来确定. 与滚动窗口类似的, flink 也提供了对应不同时间的 Assigner API(SlidingEventTimeWindow / SlidingEventTimeWindow), 语法基本类似, 只是由原本的一个参数(窗口长度) 变为了两个参数(窗口长度和滑动时间), 同样的, 为了简化代码, 依然可以使用timeWindow() 来简化.</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 两个参数分别是 窗口长度 和 滑动时间, 窗口时间类型依旧通过time characteristic 确定</span></span><br><span class="line">input.keyBy(x -&gt; x.f1).timeWindow(Time.seconds(<span class="number">10</span>), Time.seconds(<span class="number">1</span>))</span><br></pre></td></tr></table></figure>
+<p>其中, 数据流的添加是通过一个Iterator 不停的添加进去的, 具体的 join 逻辑通过 runWindowJoin( )方法, 以为为该方法的具体内容</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">public static DataStream&lt;Tuple3&lt;String, Integer, Integer&gt;&gt; runWindowJoin(</span><br><span class="line">            DataStream&lt;Tuple2&lt;String, Integer&gt;&gt; grades,</span><br><span class="line">            DataStream&lt;Tuple2&lt;String, Integer&gt;&gt; salaries,</span><br><span class="line">            long windowSize) &#123;</span><br><span class="line"></span><br><span class="line">        return grades.join(salaries)</span><br><span class="line">                .where(new NameKeySelector())</span><br><span class="line">                .equalTo(new NameKeySelector())</span><br><span class="line"></span><br><span class="line">                .window(TumblingEventTimeWindows.of(Time.milliseconds(windowSize)))</span><br><span class="line"></span><br><span class="line">                .apply(new JoinFunction&lt;Tuple2&lt;String, Integer&gt;, Tuple2&lt;String, Integer&gt;, Tuple3&lt;String, Integer, Integer&gt;&gt;() &#123;</span><br><span class="line"></span><br><span class="line">                    @Override</span><br><span class="line">                    public Tuple3&lt;String, Integer, Integer&gt; join(</span><br><span class="line">                            Tuple2&lt;String, Integer&gt; first,</span><br><span class="line">                            Tuple2&lt;String, Integer&gt; second) &#123;</span><br><span class="line">                        return new Tuple3&lt;String, Integer, Integer&gt;(first.f0, first.f1, second.f1);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
 
-<h4 id="会话窗口"><a href="#会话窗口" class="headerlink" title="会话窗口"></a>会话窗口</h4><p>会话窗口主要是将某段时间内活跃度较高的数据聚合成一个窗口计算. 触发条件是 Session Gap. 在规定的时间内没有数据接入则认为这个窗口结束,然后触发窗口计算. Session Gap 除了固定间隔的方式, 也可以动态抽取.</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 创建 Session Window, 间隔为 3s</span></span><br><span class="line">        DataStream&lt;Tuple3&lt;String, Long, Integer&gt;&gt; aggregated = source</span><br><span class="line">                .keyBy(<span class="number">0</span>)</span><br><span class="line">                .window(EventTimeSessionWindows.withGap(Time.seconds(<span class="number">3L</span>)))</span><br><span class="line">                .sum(<span class="number">2</span>);</span><br></pre></td></tr></table></figure>
-
-<h4 id="全局窗口"><a href="#全局窗口" class="headerlink" title="全局窗口"></a>全局窗口</h4><p>全局窗口将所有key的数据分配到单个窗口中计算结果.</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 创建 GlobalWindow</span></span><br><span class="line">        input.keyBy(<span class="number">1</span>)</span><br><span class="line">                .window(GlobalWindows.create())</span><br><span class="line">                .sum(<span class="number">1</span>);</span><br></pre></td></tr></table></figure>
-
-<p><strong>上面就是构建不同的窗口的方法了, 下文会介绍在有了窗口之后怎样对窗口中的数据做处理</strong></p>
 
       
     </div>
@@ -399,7 +381,7 @@
           
             <a href="/tags/flink/" rel="tag"><i class="fa fa-tag"></i> flink</a>
           
-            <a href="/tags/window/" rel="tag"><i class="fa fa-tag"></i> window</a>
+            <a href="/tags/join/" rel="tag"><i class="fa fa-tag"></i> join</a>
           
         </div>
       
@@ -412,8 +394,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/09/24/flink使用04-几种时间概念和watermark/" rel="next" title="flink使用04-几种时间概念和watermark">
-                <i class="fa fa-chevron-left"></i> flink使用04-几种时间概念和watermark
+              <a href="/2019/09/26/flink使用06-如何处理窗口内的数据/" rel="next" title="flink使用06-如何处理窗口内的数据">
+                <i class="fa fa-chevron-left"></i> flink使用06-如何处理窗口内的数据
               </a>
             
           </div>
@@ -421,10 +403,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2019/09/26/flink使用06-如何处理窗口内的数据/" rel="prev" title="flink使用06-如何处理窗口内的数据">
-                flink使用06-如何处理窗口内的数据 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -476,17 +454,8 @@
       
 
       
-        <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
-            文章目录
-          </li>
-          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
-            站点概览
-          </li>
-        </ul>
-      
 
-      <section class="site-overview-wrap sidebar-panel">
+      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -562,22 +531,6 @@
         </div>
       </section>
 
-      
-      <!--noindex-->
-        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
-          <div class="post-toc">
-
-            
-              
-            
-
-            
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-窗口组成简介"><span class="nav-number">1.</span> <span class="nav-text">1. 窗口组成简介</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Windows-Assigner"><span class="nav-number">1.1.</span> <span class="nav-text">Windows Assigner</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Windows-Trigger"><span class="nav-number">1.2.</span> <span class="nav-text">Windows Trigger</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Evictor"><span class="nav-number">1.3.</span> <span class="nav-text">Evictor</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Lateness"><span class="nav-number">1.4.</span> <span class="nav-text">Lateness</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Output-Tag"><span class="nav-number">1.5.</span> <span class="nav-text">Output Tag</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Windows-Function"><span class="nav-number">1.6.</span> <span class="nav-text">Windows Function</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-Window-Assigner"><span class="nav-number">2.</span> <span class="nav-text">2. Window Assigner</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#滚动窗口"><span class="nav-number">2.1.</span> <span class="nav-text">滚动窗口</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#滑动窗口"><span class="nav-number">2.2.</span> <span class="nav-text">滑动窗口</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#会话窗口"><span class="nav-number">2.3.</span> <span class="nav-text">会话窗口</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#全局窗口"><span class="nav-number">2.4.</span> <span class="nav-text">全局窗口</span></a></li></ol></li></ol></div>
-            
-
-          </div>
-        </section>
-      <!--/noindex-->
       
 
       
