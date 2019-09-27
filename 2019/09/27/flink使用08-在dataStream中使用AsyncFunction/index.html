@@ -75,7 +75,7 @@
 
 
 
-  <meta name="keywords" content="flink,">
+  <meta name="keywords" content="flink,async,">
 
 
 
@@ -86,20 +86,18 @@
 
 
 
-<meta name="description" content="相信大家在学习spark的时候接触的第一个案例肯定也是 wordCount, 本文也想通过这样一个简单的例子来讲一下一个简单的 flink 程序是什么样子的, 让大家对 flink 的代码有一个简单的了解. 一个 flink程序主要分为5个部分:  1. 获取执行 Environment  environment 提供控制 job 执行的方法(例如设置并行度/容错/checkpoint 参数) 并">
-<meta name="keywords" content="flink">
+<meta name="description" content="在流式处理的过程中, 在中间步骤的处理中, 如果涉及到一些费事的操作或者是外部系统的数据交互, 那么就会给整个流造成一定的延迟. 在 flink 的 1.2 版本中引入了 Asynchronous I/O, 能够支持异步的操作, 以提高 flink 系统与外部数据系统交互的性能及吞吐量. 在使用 Flink 的异步 IO 时, 主要有两个 API可以使用, 一个是AsyncDataStream.u">
+<meta name="keywords" content="flink,async">
 <meta property="og:type" content="article">
-<meta property="og:title" content="flink使用02-从WordCount开始">
-<meta property="og:url" content="https://xinze.fun/2019/09/03/flink使用02-从WordCount开始/index.html">
+<meta property="og:title" content="flink使用08-在dataStream中使用AsyncFunction">
+<meta property="og:url" content="https://xinze.fun/2019/09/27/flink使用08-在dataStream中使用AsyncFunction/index.html">
 <meta property="og:site_name" content="xinze&#39;s Blog">
-<meta property="og:description" content="相信大家在学习spark的时候接触的第一个案例肯定也是 wordCount, 本文也想通过这样一个简单的例子来讲一下一个简单的 flink 程序是什么样子的, 让大家对 flink 的代码有一个简单的了解. 一个 flink程序主要分为5个部分:  1. 获取执行 Environment  environment 提供控制 job 执行的方法(例如设置并行度/容错/checkpoint 参数) 并">
+<meta property="og:description" content="在流式处理的过程中, 在中间步骤的处理中, 如果涉及到一些费事的操作或者是外部系统的数据交互, 那么就会给整个流造成一定的延迟. 在 flink 的 1.2 版本中引入了 Asynchronous I/O, 能够支持异步的操作, 以提高 flink 系统与外部数据系统交互的性能及吞吐量. 在使用 Flink 的异步 IO 时, 主要有两个 API可以使用, 一个是AsyncDataStream.u">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://xinze.fun/2019/09/03/flink使用02-从WordCount开始/%E6%95%B0%E6%8D%AE%E6%BA%90%E6%8E%A5%E5%85%A5%E6%96%B9%E6%B3%95.png">
-<meta property="og:updated_time" content="2019-09-26T12:21:16.683Z">
+<meta property="og:updated_time" content="2019-09-27T09:17:22.008Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="flink使用02-从WordCount开始">
-<meta name="twitter:description" content="相信大家在学习spark的时候接触的第一个案例肯定也是 wordCount, 本文也想通过这样一个简单的例子来讲一下一个简单的 flink 程序是什么样子的, 让大家对 flink 的代码有一个简单的了解. 一个 flink程序主要分为5个部分:  1. 获取执行 Environment  environment 提供控制 job 执行的方法(例如设置并行度/容错/checkpoint 参数) 并">
-<meta name="twitter:image" content="https://xinze.fun/2019/09/03/flink使用02-从WordCount开始/%E6%95%B0%E6%8D%AE%E6%BA%90%E6%8E%A5%E5%85%A5%E6%96%B9%E6%B3%95.png">
+<meta name="twitter:title" content="flink使用08-在dataStream中使用AsyncFunction">
+<meta name="twitter:description" content="在流式处理的过程中, 在中间步骤的处理中, 如果涉及到一些费事的操作或者是外部系统的数据交互, 那么就会给整个流造成一定的延迟. 在 flink 的 1.2 版本中引入了 Asynchronous I/O, 能够支持异步的操作, 以提高 flink 系统与外部数据系统交互的性能及吞吐量. 在使用 Flink 的异步 IO 时, 主要有两个 API可以使用, 一个是AsyncDataStream.u">
 
 
 
@@ -129,13 +127,13 @@
 
 
 
-  <link rel="canonical" href="https://xinze.fun/2019/09/03/flink使用02-从WordCount开始/">
+  <link rel="canonical" href="https://xinze.fun/2019/09/27/flink使用08-在dataStream中使用AsyncFunction/">
 
 
 
 
 
-  <title>flink使用02-从WordCount开始 | xinze's Blog</title>
+  <title>flink使用08-在dataStream中使用AsyncFunction | xinze's Blog</title>
   
 
 
@@ -265,7 +263,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://xinze.fun/2019/09/03/flink使用02-从WordCount开始/">
+    <link itemprop="mainEntityOfPage" href="https://xinze.fun/2019/09/27/flink使用08-在dataStream中使用AsyncFunction/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="xinze">
@@ -282,7 +280,7 @@
 
         
         
-          <h2 class="post-title" itemprop="name headline">flink使用02-从WordCount开始</h2>
+          <h2 class="post-title" itemprop="name headline">flink使用08-在dataStream中使用AsyncFunction</h2>
         
 
         <div class="post-meta">
@@ -294,8 +292,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-03T11:26:50+08:00">
-                2019-09-03
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-27T16:54:38+08:00">
+                2019-09-27
               </time>
             
 
@@ -354,36 +352,14 @@
       
 
       
-        <p>相信大家在学习spark的时候接触的第一个案例肯定也是 wordCount, 本文也想通过这样一个简单的例子来讲一下一个简单的 flink 程序是什么样子的, 让大家对 flink 的代码有一个简单的了解.</p>
-<p>一个 flink程序主要分为5个部分:</p>
-<ul>
-<li><strong>1. 获取执行 Environment</strong></li>
-</ul>
-<p>environment 提供控制 job 执行的方法(例如设置并行度/容错/checkpoint 参数) 并且与外部系统做交互. flink可以做流计算也可以做批计算, 对应的也就有不同的environment , 在使用时根据不同的使用场景选择即可.</p>
-<ul>
-<li><p><strong>2. 获取输入流 Source</strong></p>
-<p>一个流式计算框架自然是少不了数据的输入, 在 streamExecutionEnvironment 的可以看到有很多种创建输入流的方式, 不过在项目中使用最多的还是使用 addSource()方法来添加不同的数据源接入</p>
-<p><img src="/2019/09/03/flink使用02-从WordCount开始/%E6%95%B0%E6%8D%AE%E6%BA%90%E6%8E%A5%E5%85%A5%E6%96%B9%E6%B3%95.png" alt></p>
-</li>
-<li><p><strong>3. 执行计算 Operator</strong></p>
-<p>在spark中,对数据的转换计算是通过 action 算子和 transformation 算子来对 RDD 中的数据来进行操作, 而在flink中, 主要是通过 Operator来对一个流做处理, 通过一个 Operator 可以将一个流转换为另外一个流, flink中内置了很多算子来实现Operator操作.</p>
-</li>
-<li><p><strong>4. 输入结果 Sink</strong></p>
-<p>在完成数据计算之后,就需要有一个输出的地方, 通常来讲也是通过 addSink() 方法来添加不同的数据输出目标,也可以通过 print() 来直接查看输出或者写入到csv等外部文件.</p>
-</li>
-<li><p><strong>5. 启动 flink,提交 job</strong></p>
-<p>一个 flink 代码的启动执行, 必须通过 env.executor() 方法.这行代码主要做了以下事情:</p>
-<ol>
-<li>生成StreamGraph </li>
-<li>生成JobGraph. </li>
-<li>生成一系列配置</li>
-<li>将 JobGraph和配置交给 flink 集群去运行</li>
-<li>以本地模式运行的话,可以看到启动过程,如启动能量度,web模块,jobManager,ResourceManager,taskManager等等</li>
-<li>启动任务</li>
-</ol>
-</li>
-</ul>
-<h4 id="以下为简单的-WordCount-代码"><a href="#以下为简单的-WordCount-代码" class="headerlink" title="以下为简单的 WordCount 代码"></a>以下为简单的 WordCount 代码</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WordCount</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 获取 StreamEnv</span></span><br><span class="line">        <span class="keyword">final</span> StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 获取 输入流</span></span><br><span class="line">        DataStream&lt;String&gt; text = env.fromElements(WordCountData.WORDS);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 执行计算Operator</span></span><br><span class="line">        DataStream&lt;Tuple2&lt;String, Integer&gt;&gt; counts</span><br><span class="line">                = text.flatMap(<span class="keyword">new</span> SplitFunction())</span><br><span class="line">                .keyBy(<span class="number">0</span>).sum(<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 输出结果</span></span><br><span class="line">        counts.print();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 启动flink程序</span></span><br><span class="line">        env.execute(<span class="string">"WordCount Demo"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// *************************************************************************</span></span><br><span class="line">    <span class="comment">// 自定义切割Function切分一行输入</span></span><br><span class="line">    <span class="comment">// *************************************************************************</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">SplitFunction</span> <span class="keyword">implements</span> <span class="title">FlatMapFunction</span>&lt;<span class="title">String</span>, <span class="title">Tuple2</span>&lt;<span class="title">String</span>, <span class="title">Integer</span>&gt;&gt;</span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">flatMap</span><span class="params">(String s, Collector&lt;Tuple2&lt;String, Integer&gt;&gt; collector)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">            String[] words = s.toLowerCase().split(<span class="string">" "</span>);</span><br><span class="line">            <span class="keyword">for</span> (String word : words) &#123;</span><br><span class="line">                <span class="keyword">if</span> (word.length() &gt; <span class="number">0</span>)&#123;</span><br><span class="line">                    collector.collect(<span class="keyword">new</span> Tuple2&lt;&gt;(word, <span class="number">1</span>));</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+        <p>在流式处理的过程中, 在中间步骤的处理中, 如果涉及到一些费事的操作或者是外部系统的数据交互, 那么就会给整个流造成一定的延迟. 在 flink 的 1.2 版本中引入了 Asynchronous I/O, 能够支持异步的操作, 以提高 flink 系统与外部数据系统交互的性能及吞吐量.</p>
+<p>在使用 Flink 的异步 IO 时, 主要有两个 API可以使用, 一个是AsyncDataStream.unorderedWait( ), 另一个AsyncDataStream.orderedWait( ).在异步处理过程中,原本数据的顺序可能会发生变化, 使用unorderWait的方法, 不会考虑顺序的问题, 一旦处理完成就会直接返回结果, 这种方法具有较低的延迟和负载. 那么orderWait的方法就是想对应的, 严格按照原本流中的数据顺序做返回, 会对系统造成一定的延迟. 实际中应该根据具体的业务情况做选择.unorderedWait或orderedWait有两个关于async operation的参数，一个是timeout参数用于设置async的超时时间，一个是capacity参数用于指定同一时刻最大允许多少个(<code>并发</code>)async request在执行；</p>
+<p>在使用异步IO时,需要自己去继承AsyncFunction,AsyncFunction接口继承了Function，它定义了asyncInvoke方法以及一个default的timeout方法；asyncInvoke方法执行异步逻辑，然后通过ResultFuture.complete将结果或异常设置到ResultFuture，如果异常则通过ResultFuture.completeExceptionally(Throwable)来传递 ResultFuture；RichAsyncFunction继承了AbstractRichFunction，同时声明实现AsyncFunction接口，它不没有实现asyncInvoke，交由子类实现；它覆盖了setRuntimeContext方法，这里使用RichAsyncFunctionRuntimeContext或者RichAsyncFunctionIterationRuntimeContext进行包装.</p>
+<p>下面是一个验证 Async I/O 的demo, 具体代码见仓库 -&gt; <a href="https://github.com/CheckChe0803/flink-simple-tutorial/tree/master/streaming/src/main/java/async" target="_blank" rel="noopener">code link</a></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AsyncIOExample</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">final</span> StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();</span><br><span class="line"></span><br><span class="line">        DataStream&lt;String&gt; inp = env.fromElements(AsyncIOData.WORDS);</span><br><span class="line">		<span class="comment">// 接收数据</span></span><br><span class="line">        SingleOutputStreamOperator&lt;String&gt; out = inp.map(<span class="keyword">new</span> MapFunction&lt;String, String&gt;() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> String <span class="title">map</span><span class="params">(String s)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">                System.out.println(<span class="string">"读取数据:"</span> + s + <span class="string">"  当前时间:"</span> + System.currentTimeMillis());</span><br><span class="line">                <span class="keyword">return</span> s;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">        <span class="comment">// 使用 AsyncFunction 对函数做一个简单的处理, 中间随机睡眠 1-10s</span></span><br><span class="line">        DataStream&lt;String&gt; asyncStream = AsyncDataStream.unorderedWait(out, <span class="keyword">new</span> SimpleAsyncFunction(), <span class="number">20_000L</span>, TimeUnit.MILLISECONDS);</span><br><span class="line">		<span class="comment">// 对已经被 AsyncFunction 处理过的数据再输出一次</span></span><br><span class="line">        asyncStream.map(<span class="keyword">new</span> MapFunction&lt;String, String&gt;() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> String <span class="title">map</span><span class="params">(String s)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">                System.out.println(<span class="string">"数据处理完毕:"</span> + s + <span class="string">"  当前时间:"</span> + System.currentTimeMillis());</span><br><span class="line">                <span class="keyword">return</span> s;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        env.execute(<span class="string">"AsyncFunction Demo"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">SimpleAsyncFunction</span> <span class="keyword">extends</span> <span class="title">RichAsyncFunction</span>&lt;<span class="title">String</span>, <span class="title">String</span>&gt;</span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">long</span> waitTime;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">final</span> Random rnd = <span class="keyword">new</span> Random(hashCode());</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">asyncInvoke</span><span class="params">(String input, ResultFuture&lt;String&gt; resultFuture)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">            <span class="comment">// 随机睡眠 1 - 10s</span></span><br><span class="line">            System.out.println(<span class="string">"开始 AsyncFunction  target -&gt; "</span> + input);</span><br><span class="line">            waitTime = rnd.nextInt(<span class="number">10</span>);</span><br><span class="line">            Thread.sleep(waitTime * <span class="number">1000</span>);</span><br><span class="line">            String out = input + input;</span><br><span class="line">            resultFuture.complete(Collections.singletonList(out));</span><br><span class="line">            System.out.println(<span class="string">"结束 AsyncFunction  target -&gt; "</span> + input + <span class="string">"  Sleep time = "</span> + waitTime + <span class="string">"s"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>以上代码的输出结果为:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">读取数据:D  当前时间:<span class="number">1569574233046</span></span><br><span class="line">读取数据:C  当前时间:<span class="number">1569574233047</span></span><br><span class="line">读取数据:A  当前时间:<span class="number">1569574233048</span></span><br><span class="line">读取数据:B  当前时间:<span class="number">1569574233049</span></span><br><span class="line">开始 AsyncFunction  target -&gt; D</span><br><span class="line">开始 AsyncFunction  target -&gt; C</span><br><span class="line">开始 AsyncFunction  target -&gt; A</span><br><span class="line">开始 AsyncFunction  target -&gt; B</span><br><span class="line">结束 AsyncFunction  target -&gt; DSleep time = <span class="number">6</span>s</span><br><span class="line">数据处理完毕:DD  当前时间:<span class="number">1569574239065</span></span><br><span class="line">结束 AsyncFunction  target -&gt; CSleep time = <span class="number">6</span>s</span><br><span class="line">数据处理完毕:CC  当前时间:<span class="number">1569574239069</span></span><br><span class="line">结束 AsyncFunction  target -&gt; ASleep time = <span class="number">6</span>s</span><br><span class="line">数据处理完毕:AA  当前时间:<span class="number">1569574239072</span></span><br><span class="line">结束 AsyncFunction  target -&gt; BSleep time = <span class="number">6</span>s</span><br><span class="line">数据处理完毕:BB  当前时间:<span class="number">1569574239076</span></span><br></pre></td></tr></table></figure>
 
 
       
@@ -404,6 +380,8 @@
           
             <a href="/tags/flink/" rel="tag"><i class="fa fa-tag"></i> flink</a>
           
+            <a href="/tags/async/" rel="tag"><i class="fa fa-tag"></i> async</a>
+          
         </div>
       
 
@@ -415,8 +393,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/09/03/flink使用01-本系列简介/" rel="next" title="flink使用01-本系列简介">
-                <i class="fa fa-chevron-left"></i> flink使用01-本系列简介
+              <a href="/2019/09/27/flink使用07-通过join合并流的操作/" rel="next" title="flink使用07-通过join合并流的操作">
+                <i class="fa fa-chevron-left"></i> flink使用07-通过join合并流的操作
               </a>
             
           </div>
@@ -424,10 +402,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2019/09/04/flink使用03-数据输入的几种不同方法/" rel="prev" title="flink使用03-数据输入的几种不同方法">
-                flink使用03-数据输入的几种不同方法 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -479,17 +453,8 @@
       
 
       
-        <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
-            文章目录
-          </li>
-          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
-            站点概览
-          </li>
-        </ul>
-      
 
-      <section class="site-overview-wrap sidebar-panel">
+      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -565,22 +530,6 @@
         </div>
       </section>
 
-      
-      <!--noindex-->
-        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
-          <div class="post-toc">
-
-            
-              
-            
-
-            
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#以下为简单的-WordCount-代码"><span class="nav-number">1.</span> <span class="nav-text">以下为简单的 WordCount 代码</span></a></li></ol></div>
-            
-
-          </div>
-        </section>
-      <!--/noindex-->
       
 
       
