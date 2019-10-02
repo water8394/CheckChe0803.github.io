@@ -75,7 +75,7 @@
 
 
 
-  <meta name="keywords" content="flink,join,">
+  <meta name="keywords" content="flink,iteration,">
 
 
 
@@ -86,18 +86,18 @@
 
 
 
-<meta name="description" content="Flink 中支持窗口上的多流合并, 需要保证的是输入的 stream 要构建在相同的 Window 上, 并使用相同类型的 Key 作为关联条件.代码如下所示, 先通过 join 方法将 inputStream1 数据集和 inputStream2 关联, 调用 where( ) 方法指定  inputStream1 的 key, 调用 equalTo( ) 方法指定 inputStream2">
-<meta name="keywords" content="flink,join">
+<meta name="description" content="迭代处理是批量处理处理中的常见操作, Flink 的 迭代计算支持两种模式, 分别是 Bulk Iteration (全量迭代计算) 和 Delt Iteration (增量迭代计算). 下面就一个计算圆周率的例子 来说一下使用 Bulk Iteration 都有哪几个步骤. 在 Bulk Iteration 中, 主要的步骤其实是分为3步, 第一步是指定最大循环次数, 第二步是指定在循环时的一">
+<meta name="keywords" content="flink,iteration">
 <meta property="og:type" content="article">
-<meta property="og:title" content="flink使用07-通过join合并流的操作">
-<meta property="og:url" content="https://xinze.fun/2019/09/27/flink使用07-通过join合并流的操作/index.html">
+<meta property="og:title" content="flink使用10-通过Bulk iterator计算圆周率">
+<meta property="og:url" content="https://xinze.fun/2019/10/02/flink使用10-通过Bulk-iterator计算圆周率/index.html">
 <meta property="og:site_name" content="xinze&#39;s Blog">
-<meta property="og:description" content="Flink 中支持窗口上的多流合并, 需要保证的是输入的 stream 要构建在相同的 Window 上, 并使用相同类型的 Key 作为关联条件.代码如下所示, 先通过 join 方法将 inputStream1 数据集和 inputStream2 关联, 调用 where( ) 方法指定  inputStream1 的 key, 调用 equalTo( ) 方法指定 inputStream2">
+<meta property="og:description" content="迭代处理是批量处理处理中的常见操作, Flink 的 迭代计算支持两种模式, 分别是 Bulk Iteration (全量迭代计算) 和 Delt Iteration (增量迭代计算). 下面就一个计算圆周率的例子 来说一下使用 Bulk Iteration 都有哪几个步骤. 在 Bulk Iteration 中, 主要的步骤其实是分为3步, 第一步是指定最大循环次数, 第二步是指定在循环时的一">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-09-27T06:21:45.907Z">
+<meta property="og:updated_time" content="2019-10-02T09:07:22.818Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="flink使用07-通过join合并流的操作">
-<meta name="twitter:description" content="Flink 中支持窗口上的多流合并, 需要保证的是输入的 stream 要构建在相同的 Window 上, 并使用相同类型的 Key 作为关联条件.代码如下所示, 先通过 join 方法将 inputStream1 数据集和 inputStream2 关联, 调用 where( ) 方法指定  inputStream1 的 key, 调用 equalTo( ) 方法指定 inputStream2">
+<meta name="twitter:title" content="flink使用10-通过Bulk iterator计算圆周率">
+<meta name="twitter:description" content="迭代处理是批量处理处理中的常见操作, Flink 的 迭代计算支持两种模式, 分别是 Bulk Iteration (全量迭代计算) 和 Delt Iteration (增量迭代计算). 下面就一个计算圆周率的例子 来说一下使用 Bulk Iteration 都有哪几个步骤. 在 Bulk Iteration 中, 主要的步骤其实是分为3步, 第一步是指定最大循环次数, 第二步是指定在循环时的一">
 
 
 
@@ -127,13 +127,13 @@
 
 
 
-  <link rel="canonical" href="https://xinze.fun/2019/09/27/flink使用07-通过join合并流的操作/">
+  <link rel="canonical" href="https://xinze.fun/2019/10/02/flink使用10-通过Bulk-iterator计算圆周率/">
 
 
 
 
 
-  <title>flink使用07-通过join合并流的操作 | xinze's Blog</title>
+  <title>flink使用10-通过Bulk iterator计算圆周率 | xinze's Blog</title>
   
 
 
@@ -263,7 +263,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://xinze.fun/2019/09/27/flink使用07-通过join合并流的操作/">
+    <link itemprop="mainEntityOfPage" href="https://xinze.fun/2019/10/02/flink使用10-通过Bulk-iterator计算圆周率/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="xinze">
@@ -280,7 +280,7 @@
 
         
         
-          <h2 class="post-title" itemprop="name headline">flink使用07-通过join合并流的操作</h2>
+          <h2 class="post-title" itemprop="name headline">flink使用10-通过Bulk iterator计算圆周率</h2>
         
 
         <div class="post-meta">
@@ -292,8 +292,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-27T13:14:05+08:00">
-                2019-09-27
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-02T16:47:18+08:00">
+                2019-10-02
               </time>
             
 
@@ -352,15 +352,9 @@
       
 
       
-        <p>Flink 中支持窗口上的多流合并, 需要保证的是输入的 stream 要构建在相同的 Window 上, 并使用相同类型的 Key 作为关联条件.代码如下所示, 先通过 join 方法将 inputStream1 数据集和 inputStream2 关联, 调用 where( ) 方法指定  inputStream1 的 key, 调用 equalTo( ) 方法指定 inputStream2 对应关联的 key. 通过 window( ) 方法指定 window Assigner, 最后再通过 apply( ) 方法传入用户自定义的 JoinFunction 或者 FlatJoinFunction 对输入的数据元素做窗口计算.</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">inputStream1.join(inputStream2)</span><br><span class="line">			<span class="comment">// 指定inputStream1的关联key</span></span><br><span class="line">			.where(<span class="number">0</span>)</span><br><span class="line">			<span class="comment">// 指定inputStream2的关联key</span></span><br><span class="line">			.equalTo(<span class="number">1</span>)</span><br><span class="line">			<span class="comment">// 指定 window Assigner</span></span><br><span class="line">			.window(TumblingEventTimeWindows.of(Time.seconds(<span class="number">10</span>)))</span><br><span class="line">			<span class="comment">// 指定窗口计算函数</span></span><br><span class="line">			.apply(&lt;JoinFunction&gt;)</span><br></pre></td></tr></table></figure>
-
-<p>下面就用 flink 官方仓库中的join example来做演示, 完整代码见仓库 -&gt; <a href="https://github.com/CheckChe0803/flink-simple-tutorial/tree/master/streaming/src/main/java/join" target="_blank" rel="noopener">code link</a></p>
-<p><strong>样例中有两个流, 分别记录的是员工的等级和员工的薪水, 流中数据的格式分别是 (name, grade) / (name, salary), 代码实现的功能是合并两个流, 转变为 (name, grade, salary) 格式的流.</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> <span class="keyword">long</span> windowSize = <span class="number">200L</span>;</span><br><span class="line"><span class="keyword">final</span> <span class="keyword">long</span> rate = <span class="number">3L</span>;</span><br><span class="line"></span><br><span class="line">System.out.println(<span class="string">"Using windowSize="</span> + windowSize + <span class="string">", data rate="</span> + rate);</span><br><span class="line">System.out.println(<span class="string">"To customize example, use: WindowJoin [--windowSize &lt;window-size-in-millis&gt;] [--rate &lt;elements-per-second&gt;]"</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取env, 配置为"ingestion time"</span></span><br><span class="line">StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();</span><br><span class="line">env.setStreamTimeCharacteristic(TimeCharacteristic.IngestionTime);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// 生成 grade 和 salary 两个流 分别是 (name, grade) / (name, salary)</span></span><br><span class="line">DataStream&lt;Tuple2&lt;String, Integer&gt;&gt; grades = WindowJoinSampleData.GradeSource.getSource(env, rate);</span><br><span class="line">DataStream&lt;Tuple2&lt;String, Integer&gt;&gt; salaries = WindowJoinSampleData.SalarySource.getSource(env, rate);</span><br><span class="line"></span><br><span class="line">DataStream&lt;Tuple3&lt;String, Integer, Integer&gt;&gt; joinedStream = runWindowJoin(grades, salaries, windowSize);</span><br><span class="line"></span><br><span class="line">joinedStream.print().setParallelism(<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">env.execute(<span class="string">"Windowed Join Example"</span>);</span><br></pre></td></tr></table></figure>
-
-<p>其中, 数据流的添加是通过一个Iterator 不停的添加进去的, 具体的 join 逻辑通过 runWindowJoin( )方法, 以为为该方法的具体内容</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">public static DataStream&lt;Tuple3&lt;String, Integer, Integer&gt;&gt; runWindowJoin(</span><br><span class="line">            DataStream&lt;Tuple2&lt;String, Integer&gt;&gt; grades,</span><br><span class="line">            DataStream&lt;Tuple2&lt;String, Integer&gt;&gt; salaries,</span><br><span class="line">            long windowSize) &#123;</span><br><span class="line"></span><br><span class="line">        return grades.join(salaries)</span><br><span class="line">                .where(new NameKeySelector())</span><br><span class="line">                .equalTo(new NameKeySelector())</span><br><span class="line"></span><br><span class="line">                .window(TumblingEventTimeWindows.of(Time.milliseconds(windowSize)))</span><br><span class="line"></span><br><span class="line">                .apply(new JoinFunction&lt;Tuple2&lt;String, Integer&gt;, Tuple2&lt;String, Integer&gt;, Tuple3&lt;String, Integer, Integer&gt;&gt;() &#123;</span><br><span class="line"></span><br><span class="line">                    @Override</span><br><span class="line">                    public Tuple3&lt;String, Integer, Integer&gt; join(</span><br><span class="line">                            Tuple2&lt;String, Integer&gt; first,</span><br><span class="line">                            Tuple2&lt;String, Integer&gt; second) &#123;</span><br><span class="line">                        return new Tuple3&lt;String, Integer, Integer&gt;(first.f0, first.f1, second.f1);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+        <p> 迭代处理是批量处理处理中的常见操作, Flink 的 迭代计算支持两种模式, 分别是 Bulk Iteration (全量迭代计算) 和 Delt Iteration (增量迭代计算). 下面就一个计算圆周率的例子 来说一下使用 Bulk Iteration 都有哪几个步骤.</p>
+<p>在 Bulk Iteration 中, 主要的步骤其实是分为3步, 第一步是指定最大循环次数, 第二步是指定在循环时的一个计算处理的过程, 最后一步就是调用计算过程, 指定结束条件. 具体代码如下所示</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BulkIteration</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">		<span class="comment">// 获取执行环境</span></span><br><span class="line">        ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();</span><br><span class="line">        env.setParallelism(<span class="number">1</span>);</span><br><span class="line">		<span class="comment">// 构建输出数据</span></span><br><span class="line">        DataSource&lt;Integer&gt; data = env.fromElements(<span class="number">0</span>);</span><br><span class="line">        <span class="comment">// 1. 指定循环次数</span></span><br><span class="line">        IterativeDataSet&lt;Integer&gt; loop = data.iterate(<span class="number">1000</span>);</span><br><span class="line">        <span class="comment">// 2. 指循环计算过程</span></span><br><span class="line">        MapOperator&lt;Integer, Integer&gt; process = loop.map(<span class="keyword">new</span> MapFunction&lt;Integer, Integer&gt;() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> Integer <span class="title">map</span><span class="params">(Integer i)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">                <span class="keyword">double</span> x = Math.random();</span><br><span class="line">                <span class="keyword">double</span> y = Math.random();</span><br><span class="line">                <span class="keyword">int</span> result = (x * x + y * y) &lt; <span class="number">1</span> ? <span class="number">1</span> : <span class="number">0</span>;</span><br><span class="line">                <span class="keyword">return</span> i + result;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">        <span class="comment">// 3. 使用 closeWith 调用计算过程</span></span><br><span class="line">        List&lt;Integer&gt; collect = loop.closeWith(process).collect();</span><br><span class="line">        <span class="comment">// 输出最终结果</span></span><br><span class="line">        <span class="keyword">for</span> (Integer i : collect) &#123;</span><br><span class="line">            System.out.println( i / <span class="number">1000.0</span> * <span class="number">4</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 
       
@@ -381,7 +375,7 @@
           
             <a href="/tags/flink/" rel="tag"><i class="fa fa-tag"></i> flink</a>
           
-            <a href="/tags/join/" rel="tag"><i class="fa fa-tag"></i> join</a>
+            <a href="/tags/iteration/" rel="tag"><i class="fa fa-tag"></i> iteration</a>
           
         </div>
       
@@ -394,8 +388,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/09/26/flink使用06-如何处理窗口内的数据/" rel="next" title="flink使用06-如何处理窗口内的数据">
-                <i class="fa fa-chevron-left"></i> flink使用06-如何处理窗口内的数据
+              <a href="/2019/09/29/flink使用09-DataSet初体验之通过Inputformat构建dataSet/" rel="next" title="flink使用09-DataSet初体验之通过Inputformat构建dataSet">
+                <i class="fa fa-chevron-left"></i> flink使用09-DataSet初体验之通过Inputformat构建dataSet
               </a>
             
           </div>
@@ -403,10 +397,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2019/09/27/flink使用08-在dataStream中使用AsyncFunction/" rel="prev" title="flink使用08-在dataStream中使用AsyncFunction">
-                flink使用08-在dataStream中使用AsyncFunction <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
