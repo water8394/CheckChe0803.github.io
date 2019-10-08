@@ -4,6 +4,33 @@
   
     
     <entry>
+      <title>flink使用12-用 table API 实现WordCount</title>
+      <link href="/2019/10/08/flink%E4%BD%BF%E7%94%A812-%E7%94%A8-table-API-%E5%AE%9E%E7%8E%B0WordCount/"/>
+      <url>/2019/10/08/flink%E4%BD%BF%E7%94%A812-%E7%94%A8-table-API-%E5%AE%9E%E7%8E%B0WordCount/</url>
+      
+        <content type="html"><![CDATA[<p>Table API 是 Flink 构建在 DataSet 和 DataStream API 之上的一套结构化编程接口. 本文希望通过一个简单的 wordCount 的例子首先来体验一下普通的 Flink Table 的代码是由哪些部分构成的.</p><ol><li><p><strong>获取 TableEnvironment</strong></p><p>ExecutionEnvironment 是必不可少的, 不管是Stream API 还是 batch API 都需要一个Environment来管理程序, TableEnvironment 也是在使用 Table API 时首先需要创建的, 它提供了注册内部表/ 执行 Flink SQL 语句/ 注册自定义函数等多种功能. 要获取 TableEnvironment, 首先需要根据情况先创建 DataSet 或者 DataStream 的 Environment, 之后再转换为 TableEnvironment.</p><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 以获取 batch Table API 为例, stream类似</span></span><br><span class="line">ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();</span><br><span class="line">BatchTableEnvironment tEnv = BatchTableEnvironment.create(env);</span><br></pre></td></tr></table></figure></li><li><p><strong>拿到 Table</strong></p><p>在以 DataSet API 或者 DataStream API 操作时, 一般有通过集合 / 文件 / socket / 外部数据源 等多种方式来将数据输入. 在 Table API 中, 同样也可以以多种不同的形式去创建一个 Table, 只不过过程相对复杂一些. 拿到一张表的方式有多种, 有通过 Table Descriptor / 用户自定义 Table Source / 由DataStream或者DataSet转换的形式等来实现. 具体的实现操作以后的文章再来详细展示, 下面就以通过 DataSet转换的方式来简单完成.</p><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// WC 为自定义的 POJO 来统计单词的信息. 首先构建DataSet</span></span><br><span class="line">DataSet&lt;WC&gt; input = env.fromElements(</span><br><span class="line">                <span class="keyword">new</span> WC(<span class="string">"Hello"</span>, <span class="number">1</span>),</span><br><span class="line">                <span class="keyword">new</span> WC(<span class="string">"flink"</span>, <span class="number">1</span>),</span><br><span class="line">                <span class="keyword">new</span> WC(<span class="string">"Hello"</span>, <span class="number">1</span>));</span><br><span class="line"><span class="comment">// 直接将 DataSet 转换为 Table</span></span><br><span class="line">Table table = tEnv.fromDataSet(input);</span><br></pre></td></tr></table></figure></li><li><p><strong>数据转换操作</strong></p><p>拿到了 Table 之后, 就可以正常的进行数据转换的操作了, 如底层的 API一样, 常见的操作 Table API 都已经实现好了, 包括 <strong>数据查询和过滤</strong> / <strong>窗口操作</strong> / <strong>聚合操作</strong> / <strong>多表关联</strong> / <strong>集合操作</strong> / <strong>排序操作</strong> / <strong>数据写入</strong>. 但是具体的 API语法还是与底层API有很大的不同的, 目的就是为了更方便更类似SQL的形式方便用户去写业务逻辑, 下面就展示一下如何实现 wordCount这个一个步骤.</p><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Table filtered = table</span><br><span class="line">                .groupBy(<span class="string">"word"</span>)</span><br><span class="line">    <span class="comment">// 在 select 方法中可以方便的直接使用类sql语句进行操作</span></span><br><span class="line">                .select(<span class="string">"word, frequency.sum as frequency"</span>)</span><br><span class="line">                .filter(<span class="string">"frequency = 2"</span>);</span><br></pre></td></tr></table></figure></li><li><p><strong>数据输出</strong></p><p>数据处理完毕之后最后一步就是结果的输出, 这一步与底层的API也是大同小异的, 可以将结果直接insetInto()到其他在TableEnvironment注册的表中, 也可以将处理完成的结果转换为 DataSet 或者是 DataStream 亦或是通过自定义的 sink 输出. </p><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 1. 直接输入到其他表中</span></span><br><span class="line">table.insertInto(<span class="string">"otherTbale"</span>);</span><br><span class="line"><span class="comment">// 2. 转换为 DataSet / DataStream</span></span><br><span class="line">DataSet&lt;WC&gt; result = tEnv.toDataSet(filtered, WC.class);</span><br><span class="line"><span class="comment">// 3. 自定义 sink</span></span><br><span class="line">CsvTableSink tableSink = <span class="keyword">new</span> CsvTableSink(path, <span class="string">","</span>);</span><br><span class="line">tEnv.registerTableSink(<span class="string">"csvSink"</span>, tableSink);</span><br></pre></td></tr></table></figure></li></ol><p>通过上面几步, 一个完整的 Flink Table API 的程序就构建完毕了, 有了前面学习 flink 的经验, 这部分其实是水到渠成的, 稍微了解下就可以上手了, 本文对应的 wordCount 案例在 <a href="https://github.com/CheckChe0803/flink-simple-tutorial/blob/master/table/src/main/java/wordCount/WordCountTable.java" target="_blank" rel="noopener">github</a> 中, 在后面的部分会继续讲解一下其他 Table API 的内容.</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> flink </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> flink </tag>
+            
+            <tag> table </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>flink使用11-了解broadcast的用法</title>
       <link href="/2019/10/02/flink%E4%BD%BF%E7%94%A811-%E4%BA%86%E8%A7%A3broadcast%E7%9A%84%E7%94%A8%E6%B3%95/"/>
       <url>/2019/10/02/flink%E4%BD%BF%E7%94%A811-%E4%BA%86%E8%A7%A3broadcast%E7%9A%84%E7%94%A8%E6%B3%95/</url>

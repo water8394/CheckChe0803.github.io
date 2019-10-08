@@ -75,7 +75,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT">
+  <meta name="keywords" content="flink,table,">
 
 
 
@@ -86,13 +86,18 @@
 
 
 
-<meta property="og:type" content="website">
-<meta property="og:title" content="xinze&#39;s Blog">
-<meta property="og:url" content="https://xinze.fun/tags/dataSource/index.html">
+<meta name="description" content="Table API 是 Flink 构建在 DataSet 和 DataStream API 之上的一套结构化编程接口. 本文希望通过一个简单的 wordCount 的例子首先来体验一下普通的 Flink Table 的代码是由哪些部分构成的.  获取 TableEnvironment ExecutionEnvironment 是必不可少的, 不管是Stream API 还是 batch API">
+<meta name="keywords" content="flink,table">
+<meta property="og:type" content="article">
+<meta property="og:title" content="flink使用12-用 table API 实现WordCount">
+<meta property="og:url" content="https://xinze.fun/2019/10/08/flink使用12-用-table-API-实现WordCount/index.html">
 <meta property="og:site_name" content="xinze&#39;s Blog">
+<meta property="og:description" content="Table API 是 Flink 构建在 DataSet 和 DataStream API 之上的一套结构化编程接口. 本文希望通过一个简单的 wordCount 的例子首先来体验一下普通的 Flink Table 的代码是由哪些部分构成的.  获取 TableEnvironment ExecutionEnvironment 是必不可少的, 不管是Stream API 还是 batch API">
 <meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-10-08T14:33:09.806Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="xinze&#39;s Blog">
+<meta name="twitter:title" content="flink使用12-用 table API 实现WordCount">
+<meta name="twitter:description" content="Table API 是 Flink 构建在 DataSet 和 DataStream API 之上的一套结构化编程接口. 本文希望通过一个简单的 wordCount 的例子首先来体验一下普通的 Flink Table 的代码是由哪些部分构成的.  获取 TableEnvironment ExecutionEnvironment 是必不可少的, 不管是Stream API 还是 batch API">
 
 
 
@@ -122,13 +127,13 @@
 
 
 
-  <link rel="canonical" href="https://xinze.fun/tags/dataSource/">
+  <link rel="canonical" href="https://xinze.fun/2019/10/08/flink使用12-用-table-API-实现WordCount/">
 
 
 
 
 
-  <title>标签: dataSource | xinze's Blog</title>
+  <title>flink使用12-用 table API 实现WordCount | xinze's Blog</title>
   
 
 
@@ -147,7 +152,7 @@
     
   
 
-  <div class="container sidebar-position-left ">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband">
       
       <a href="https://github.com/CheckChe0803" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewbox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"/><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"/><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"/></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
@@ -244,52 +249,191 @@
           <div id="content" class="content">
             
 
-  
-  
-  
-  <div class="post-block tag">
+  <div id="posts" class="posts-expand">
+    
 
-    <div id="posts" class="posts-collapse">
-      <div class="collection-title">
-        <h2>dataSource<small>标签</small>
-        </h2>
-      </div>
+  
 
-      
-        
+  
+  
+  
 
   <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://xinze.fun/2019/10/08/flink使用12-用-table-API-实现WordCount/">
 
-      <h3 class="post-title">
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="xinze">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="xinze's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
         
-            <a class="post-title-link" href="/2019/09/04/flink使用03-数据输入的几种不同方法/" itemprop="url">
-              
-                <span itemprop="name">flink使用03-数据输入的几种不同方法</span>
-              
-            </a>
         
-      </h3>
+          <h2 class="post-title" itemprop="name headline">flink使用12-用 table API 实现WordCount</h2>
+        
 
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated" datetime="2019-09-04T22:54:39+08:00" content="2019-09-04">
-          09-04
-        </time>
-      </div>
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-08T21:11:13+08:00">
+                2019-10-08
+              </time>
+            
 
-    </header>
-  </article>
+            
 
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/flink/" itemprop="url" rel="index">
+                    <span itemprop="name">flink</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Table API 是 Flink 构建在 DataSet 和 DataStream API 之上的一套结构化编程接口. 本文希望通过一个简单的 wordCount 的例子首先来体验一下普通的 Flink Table 的代码是由哪些部分构成的.</p>
+<ol>
+<li><p><strong>获取 TableEnvironment</strong></p>
+<p>ExecutionEnvironment 是必不可少的, 不管是Stream API 还是 batch API 都需要一个Environment来管理程序, TableEnvironment 也是在使用 Table API 时首先需要创建的, 它提供了注册内部表/ 执行 Flink SQL 语句/ 注册自定义函数等多种功能. 要获取 TableEnvironment, 首先需要根据情况先创建 DataSet 或者 DataStream 的 Environment, 之后再转换为 TableEnvironment.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 以获取 batch Table API 为例, stream类似</span></span><br><span class="line">ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();</span><br><span class="line">BatchTableEnvironment tEnv = BatchTableEnvironment.create(env);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>拿到 Table</strong></p>
+<p>在以 DataSet API 或者 DataStream API 操作时, 一般有通过集合 / 文件 / socket / 外部数据源 等多种方式来将数据输入. 在 Table API 中, 同样也可以以多种不同的形式去创建一个 Table, 只不过过程相对复杂一些. 拿到一张表的方式有多种, 有通过 Table Descriptor / 用户自定义 Table Source / 由DataStream或者DataSet转换的形式等来实现. 具体的实现操作以后的文章再来详细展示, 下面就以通过 DataSet转换的方式来简单完成.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// WC 为自定义的 POJO 来统计单词的信息. 首先构建DataSet</span></span><br><span class="line">DataSet&lt;WC&gt; input = env.fromElements(</span><br><span class="line">                <span class="keyword">new</span> WC(<span class="string">"Hello"</span>, <span class="number">1</span>),</span><br><span class="line">                <span class="keyword">new</span> WC(<span class="string">"flink"</span>, <span class="number">1</span>),</span><br><span class="line">                <span class="keyword">new</span> WC(<span class="string">"Hello"</span>, <span class="number">1</span>));</span><br><span class="line"><span class="comment">// 直接将 DataSet 转换为 Table</span></span><br><span class="line">Table table = tEnv.fromDataSet(input);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>数据转换操作</strong></p>
+<p>拿到了 Table 之后, 就可以正常的进行数据转换的操作了, 如底层的 API一样, 常见的操作 Table API 都已经实现好了, 包括 <strong>数据查询和过滤</strong> / <strong>窗口操作</strong> / <strong>聚合操作</strong> / <strong>多表关联</strong> / <strong>集合操作</strong> / <strong>排序操作</strong> / <strong>数据写入</strong>. 但是具体的 API语法还是与底层API有很大的不同的, 目的就是为了更方便更类似SQL的形式方便用户去写业务逻辑, 下面就展示一下如何实现 wordCount这个一个步骤.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Table filtered = table</span><br><span class="line">                .groupBy(<span class="string">"word"</span>)</span><br><span class="line">    			<span class="comment">// 在 select 方法中可以方便的直接使用类sql语句进行操作</span></span><br><span class="line">                .select(<span class="string">"word, frequency.sum as frequency"</span>)</span><br><span class="line">                .filter(<span class="string">"frequency = 2"</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>数据输出</strong></p>
+<p>数据处理完毕之后最后一步就是结果的输出, 这一步与底层的API也是大同小异的, 可以将结果直接insetInto()到其他在TableEnvironment注册的表中, 也可以将处理完成的结果转换为 DataSet 或者是 DataStream 亦或是通过自定义的 sink 输出. </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 1. 直接输入到其他表中</span></span><br><span class="line">table.insertInto(<span class="string">"otherTbale"</span>);</span><br><span class="line"><span class="comment">// 2. 转换为 DataSet / DataStream</span></span><br><span class="line">DataSet&lt;WC&gt; result = tEnv.toDataSet(filtered, WC.class);</span><br><span class="line"><span class="comment">// 3. 自定义 sink</span></span><br><span class="line">CsvTableSink tableSink = <span class="keyword">new</span> CsvTableSink(path, <span class="string">","</span>);</span><br><span class="line">tEnv.registerTableSink(<span class="string">"csvSink"</span>, tableSink);</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<p>通过上面几步, 一个完整的 Flink Table API 的程序就构建完毕了, 有了前面学习 flink 的经验, 这部分其实是水到渠成的, 稍微了解下就可以上手了, 本文对应的 wordCount 案例在 <a href="https://github.com/CheckChe0803/flink-simple-tutorial/blob/master/table/src/main/java/wordCount/WordCountTable.java" target="_blank" rel="noopener">github</a> 中, 在后面的部分会继续讲解一下其他 Table API 的内容.</p>
 
       
     </div>
+    
+    
+    
 
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/flink/" rel="tag"><i class="fa fa-tag"></i> flink</a>
+          
+            <a href="/tags/table/" rel="tag"><i class="fa fa-tag"></i> table</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/10/02/flink使用11-了解broadcast的用法/" rel="next" title="flink使用11-了解broadcast的用法">
+                <i class="fa fa-chevron-left"></i> flink使用11-了解broadcast的用法
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
   </div>
   
   
   
+  </article>
 
-  
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
 
           </div>
@@ -297,6 +441,10 @@
 
 
           
+
+  
+
+
 
         </div>
         
@@ -553,6 +701,10 @@
 
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
 
   
 
