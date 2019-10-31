@@ -4,6 +4,33 @@
   
     
     <entry>
+      <title>flink使用13-开始体验 Flink SQL</title>
+      <link href="/2019/10/31/flink%E4%BD%BF%E7%94%A813-%E5%BC%80%E5%A7%8B%E4%BD%93%E9%AA%8C-Flink-SQL/"/>
+      <url>/2019/10/31/flink%E4%BD%BF%E7%94%A813-%E5%BC%80%E5%A7%8B%E4%BD%93%E9%AA%8C-Flink-SQL/</url>
+      
+        <content type="html"><![CDATA[<p>SQL API 是 Flink 中最顶级的 API , 它构建了 Table API 之上, 也可以方便的和 Table 做转换, 构建 SQL 所使用的Environment 也是 Table Environment .  Flink SQL 底层使用 Apache Calcite 框架, 将标准的 Flink SQL 语句解析并转换成底层的算子处理逻辑. 下面就直接用 Flink 官方仓库中的 案例 <a href="https://github.com/CheckChe0803/flink-simple-tutorial/blob/master/table/src/main/java/sql/StreamSQLExample.java" target="_blank" rel="noopener">Code Link</a>来做一个演示.</p><ol><li>获取执行环境</li></ol><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 首先同样有流处理和批处理的区别, </span></span><br><span class="line"><span class="comment">// 获取对应的environment之后直接转换为Table environment ,</span></span><br><span class="line"><span class="comment">// 就可以使用SQL API,</span></span><br><span class="line">StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();</span><br><span class="line">StreamTableEnvironment tEnv = StreamTableEnvironment.create(env);</span><br></pre></td></tr></table></figure><ol start="2"><li>拿到要操作的表</li></ol><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 将 Stream 转换为 Table, 可以采用不同的办法</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 将 DataStream 转换为 Table</span></span><br><span class="line">Table tableA = tEnv.fromDataStream(orderA, <span class="string">"user, product, amount"</span>);</span><br><span class="line"><span class="comment">// 将 DataStream 注册成 Table</span></span><br><span class="line">tEnv.registerDataStream(<span class="string">"OrderB"</span>, orderB, <span class="string">"user, product, amount"</span>);</span><br></pre></td></tr></table></figure><ol start="3"><li>执行SQL语句</li></ol><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// TableEnvironment 有 SqlQuery 和 SqlUpdate 两种操作符可以使用</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// union 两个 table</span></span><br><span class="line"> Table result = tEnv.sqlQuery(<span class="string">"SELECT * FROM "</span> + tableA + <span class="string">" WHERE amount &gt; 2 UNION ALL "</span> +<span class="string">"SELECT * FROM OrderB WHERE amount &gt; 2"</span>);</span><br></pre></td></tr></table></figure><p>SQL可以执行许多复杂的操作,本文先简单的了解下 SQL 的API</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> flink </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> flink </tag>
+            
+            <tag> table </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>flink使用12-用 table API 实现WordCount</title>
       <link href="/2019/10/08/flink%E4%BD%BF%E7%94%A812-%E7%94%A8-table-API-%E5%AE%9E%E7%8E%B0WordCount/"/>
       <url>/2019/10/08/flink%E4%BD%BF%E7%94%A812-%E7%94%A8-table-API-%E5%AE%9E%E7%8E%B0WordCount/</url>
