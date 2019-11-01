@@ -4,6 +4,33 @@
   
     
     <entry>
+      <title>flink使用14-使用SQL操作几种window</title>
+      <link href="/2019/11/01/flink%E4%BD%BF%E7%94%A814-%E4%BD%BF%E7%94%A8SQL%E6%93%8D%E4%BD%9C%E5%87%A0%E7%A7%8Dwindow/"/>
+      <url>/2019/11/01/flink%E4%BD%BF%E7%94%A814-%E4%BD%BF%E7%94%A8SQL%E6%93%8D%E4%BD%9C%E5%87%A0%E7%A7%8Dwindow/</url>
+      
+        <content type="html"><![CDATA[<p>Flink SQL 支持三种窗口类型, 分别为 Tumble Windows / HOP Windows 和 Session Windows. 其中 HOP windows 对应 Table API 中的 Sliding Window, 同时每种窗口分别有相应的使用场景和方法.</p><table><thead><tr><th></th><th>Tumble Windows</th><th>HOP Window</th><th>Session Windows</th></tr></thead><tbody><tr><td>类型</td><td></td><td></td><td></td></tr><tr><td></td><td>TUMBLE(time_attr, interval)</td><td>HOP(time_attr, interval1,interval2)</td><td>HOP(time_attr, interval)</td></tr></tbody></table>]]></content>
+      
+      
+      <categories>
+          
+          <category> flink </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> flink </tag>
+            
+            <tag> sql </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>flink使用13-开始体验 Flink SQL</title>
       <link href="/2019/10/31/flink%E4%BD%BF%E7%94%A813-%E5%BC%80%E5%A7%8B%E4%BD%93%E9%AA%8C-Flink-SQL/"/>
       <url>/2019/10/31/flink%E4%BD%BF%E7%94%A813-%E5%BC%80%E5%A7%8B%E4%BD%93%E9%AA%8C-Flink-SQL/</url>
