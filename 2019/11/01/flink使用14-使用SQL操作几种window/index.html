@@ -86,18 +86,18 @@
 
 
 
-<meta name="description" content="Flink SQL 支持三种窗口类型, 分别为 Tumble Windows / HOP Windows 和 Session Windows. 其中 HOP windows 对应 Table API 中的 Sliding Window, 同时每种窗口分别有相应的使用场景和方法.     Tumble Windows HOP Window Session Windows           TUMB">
+<meta name="description" content="Flink SQL 支持三种窗口类型, 分别为 Tumble Windows / HOP Windows 和 Session Windows. 其中 HOP windows 对应 Table API 中的 Sliding Window, 同时每种窗口分别有相应的使用场景和方法.     Tumble Windows HOP Window Session Windows     TUMBLE(tim">
 <meta name="keywords" content="flink,sql">
 <meta property="og:type" content="article">
 <meta property="og:title" content="flink使用14-使用SQL操作几种window">
 <meta property="og:url" content="https://xinze.fun/2019/11/01/flink使用14-使用SQL操作几种window/index.html">
 <meta property="og:site_name" content="xinze&#39;s Blog">
-<meta property="og:description" content="Flink SQL 支持三种窗口类型, 分别为 Tumble Windows / HOP Windows 和 Session Windows. 其中 HOP windows 对应 Table API 中的 Sliding Window, 同时每种窗口分别有相应的使用场景和方法.     Tumble Windows HOP Window Session Windows           TUMB">
+<meta property="og:description" content="Flink SQL 支持三种窗口类型, 分别为 Tumble Windows / HOP Windows 和 Session Windows. 其中 HOP windows 对应 Table API 中的 Sliding Window, 同时每种窗口分别有相应的使用场景和方法.     Tumble Windows HOP Window Session Windows     TUMBLE(tim">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-11-01T16:47:23.819Z">
+<meta property="og:updated_time" content="2019-11-02T02:52:45.218Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="flink使用14-使用SQL操作几种window">
-<meta name="twitter:description" content="Flink SQL 支持三种窗口类型, 分别为 Tumble Windows / HOP Windows 和 Session Windows. 其中 HOP windows 对应 Table API 中的 Sliding Window, 同时每种窗口分别有相应的使用场景和方法.     Tumble Windows HOP Window Session Windows           TUMB">
+<meta name="twitter:description" content="Flink SQL 支持三种窗口类型, 分别为 Tumble Windows / HOP Windows 和 Session Windows. 其中 HOP windows 对应 Table API 中的 Sliding Window, 同时每种窗口分别有相应的使用场景和方法.     Tumble Windows HOP Window Session Windows     TUMBLE(tim">
 
 
 
@@ -364,17 +364,24 @@
 </thead>
 <tbody><tr>
 <td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td></td>
 <td>TUMBLE(time_attr, interval)</td>
 <td>HOP(time_attr, interval1,interval2)</td>
 <td>HOP(time_attr, interval)</td>
 </tr>
 </tbody></table>
+<p>下面用几段代码演示如何使用上面 3组 API. 完整的代码见 <a href="https://github.com/CheckChe0803/flink-simple-tutorial/tree/master/table/src/main/java/sql/window" target="_blank" rel="noopener">Github</a></p>
+<p>首先填充一点测试数据</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 初始数据  字段解释 -&gt; (timeStamp , name , value)</span></span><br><span class="line">DataStream&lt;Tuple3&lt;Long, String,Integer&gt;&gt; log = env.fromCollection(Arrays.asList(</span><br><span class="line">    <span class="comment">//时间 14:53:00</span></span><br><span class="line">    <span class="keyword">new</span> Tuple3&lt;&gt;(<span class="number">1572591180_000L</span>,<span class="string">"xiao_ming"</span>,<span class="number">300</span>),</span><br><span class="line">    <span class="comment">//时间 14:53:09</span></span><br><span class="line">    <span class="keyword">new</span> Tuple3&lt;&gt;(<span class="number">1572591189_000L</span>,<span class="string">"zhang_san"</span>,<span class="number">303</span>),</span><br><span class="line">    <span class="comment">//时间 14:53:12</span></span><br><span class="line">    <span class="keyword">new</span> Tuple3&lt;&gt;(<span class="number">1572591192_000L</span>, <span class="string">"xiao_li"</span>,<span class="number">204</span>),</span><br><span class="line">    <span class="comment">//时间 14:53:21</span></span><br><span class="line">    <span class="keyword">new</span> Tuple3&lt;&gt;(<span class="number">1572591201_000L</span>,<span class="string">"li_si"</span>, <span class="number">208</span>)));</span><br></pre></td></tr></table></figure>
+
+<p>然后是转换为 Table</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//这里需要注意的是 如果采用了EventTime, 那么 对应字段后面加 .rowtime, 否则加 .proctime</span></span><br><span class="line">Table logT = tEnv.fromDataStream(logWithTime, <span class="string">"t.rowtime, name, v"</span>);</span><br></pre></td></tr></table></figure>
+
+<h4 id="Tumble-Windows"><a href="#Tumble-Windows" class="headerlink" title="Tumble Windows"></a>Tumble Windows</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// GROUP BY TUMBLE(t, INTERVAL '10' SECOND) 相当于根据10s的时间来划分窗口</span></span><br><span class="line"><span class="comment">// TUMBLE_START(t, INTERVAL '10' SECOND) 获取窗口的开始时间</span></span><br><span class="line"><span class="comment">// TUMBLE_END(t, INTERVAL '10' SECOND) 获取窗口的结束时间</span></span><br><span class="line">tEnv.sqlQuery(<span class="string">"SELECT TUMBLE_START(t, INTERVAL '10' SECOND) AS window_start,"</span> +</span><br><span class="line">                <span class="string">"TUMBLE_END(t, INTERVAL '10' SECOND) AS window_end, SUM(v) FROM "</span></span><br><span class="line">                + logT + <span class="string">" GROUP BY TUMBLE(t, INTERVAL '10' SECOND)"</span>);</span><br></pre></td></tr></table></figure>
+
+<h4 id="HOP-Windows"><a href="#HOP-Windows" class="headerlink" title="HOP Windows"></a>HOP Windows</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// HOP(time_attr, interval1, interval2)</span></span><br><span class="line"><span class="comment">// interval1 滑动长度</span></span><br><span class="line"><span class="comment">// interval2 窗口长度</span></span><br><span class="line"><span class="comment">// HOP_START(t, INTERVAL '5' SECOND, INTERVAL '10' SECOND) 表示窗口开始时间</span></span><br><span class="line"><span class="comment">// HOP_END(t, INTERVAL '5' SECOND, INTERVAL '10' SECOND) 表示窗口结束时间</span></span><br><span class="line">Table result = tEnv.sqlQuery(<span class="string">"SELECT HOP_START(t, INTERVAL '5' SECOND, INTERVAL '10' SECOND) AS window_start,"</span> + <span class="string">"HOP_END(t, INTERVAL '5' SECOND, INTERVAL '10' SECOND) AS window_end, SUM(v) FROM "</span>+ logT + <span class="string">" GROUP BY HOP(t, INTERVAL '5' SECOND, INTERVAL '10' SECOND)"</span>);</span><br></pre></td></tr></table></figure>
+
+<h4 id="Session-Windows"><a href="#Session-Windows" class="headerlink" title="Session Windows"></a>Session Windows</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// SESSION(time_attr, interval)</span></span><br><span class="line"><span class="comment">// interval 表示两条数据触发session的最大间隔</span></span><br><span class="line">Table result = tEnv.sqlQuery(<span class="string">"SELECT SESSION_START(t, INTERVAL '5' SECOND) AS window_start,"</span> +<span class="string">"SESSION_END(t, INTERVAL '5' SECOND) AS window_end, SUM(v) FROM "</span></span><br><span class="line">+ logT + <span class="string">" GROUP BY SESSION(t, INTERVAL '5' SECOND)"</span>);</span><br></pre></td></tr></table></figure>
+
 
       
     </div>
@@ -467,8 +474,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -545,6 +561,22 @@
       </section>
 
       
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#Tumble-Windows"><span class="nav-number">1.</span> <span class="nav-text">Tumble Windows</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#HOP-Windows"><span class="nav-number">2.</span> <span class="nav-text">HOP Windows</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Session-Windows"><span class="nav-number">3.</span> <span class="nav-text">Session Windows</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
 
       
 
@@ -589,7 +621,7 @@
 </span>
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共9.6k字</span>
+  <span class="post-count">博客全站共10k字</span>
 </div>
         
 
