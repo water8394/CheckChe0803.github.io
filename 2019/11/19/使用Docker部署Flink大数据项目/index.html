@@ -75,7 +75,7 @@
 
 
 
-  <meta name="keywords" content="flnik,dataset,">
+  <meta name="keywords" content="docker,flink-recommend-demo,">
 
 
 
@@ -86,18 +86,21 @@
 
 
 
-<meta name="description" content="Flink 提供了一套 DataSet 的 API 来做批处理. 其实 DataSet 的使用方法还是和 DataStream 很相似的, 本章主要是先简单的说一下 DataSet 的基本使用.  DataSet API 其实和 DataStream ApI 相似, 都是需要创建 ExecutionEnvironment 环境, 然后通过 ExecutionEnvironment 环境提供的方法读">
-<meta name="keywords" content="flnik,dataset">
+<meta name="description" content="本文是为基于Flink的商品推荐系统所搭建的Docker环境，目的为了方便体验项目，一键部署项目需要的所有环境，并预填充所需要的数据。完整的环境包括Zookeeper 、Kafka 、 Hbase 、 Mysql 、 Redis 、 Flink 。 环境介绍： zookeeper 3.4.5 kafka 2.12-2.2.1 hbase 1.5.0 mysql 8.0.18 redis flink">
+<meta name="keywords" content="docker,flink-recommend-demo">
 <meta property="og:type" content="article">
-<meta property="og:title" content="flink使用09-DataSet初体验之通过Inputformat构建dataSet">
-<meta property="og:url" content="https://xinze.fun/2019/09/29/flink使用09-DataSet初体验之通过Inputformat构建dataSet/index.html">
+<meta property="og:title" content="使用Docker部署Flink大数据项目">
+<meta property="og:url" content="https://xinze.fun/2019/11/19/使用Docker部署Flink大数据项目/index.html">
 <meta property="og:site_name" content="xinze&#39;s Blog">
-<meta property="og:description" content="Flink 提供了一套 DataSet 的 API 来做批处理. 其实 DataSet 的使用方法还是和 DataStream 很相似的, 本章主要是先简单的说一下 DataSet 的基本使用.  DataSet API 其实和 DataStream ApI 相似, 都是需要创建 ExecutionEnvironment 环境, 然后通过 ExecutionEnvironment 环境提供的方法读">
+<meta property="og:description" content="本文是为基于Flink的商品推荐系统所搭建的Docker环境，目的为了方便体验项目，一键部署项目需要的所有环境，并预填充所需要的数据。完整的环境包括Zookeeper 、Kafka 、 Hbase 、 Mysql 、 Redis 、 Flink 。 环境介绍： zookeeper 3.4.5 kafka 2.12-2.2.1 hbase 1.5.0 mysql 8.0.18 redis flink">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-09-29T14:02:41.350Z">
+<meta property="og:image" content="https://xinze.fun/2019/11/19/使用Docker部署Flink大数据项目/%E5%AE%B9%E5%99%A8%E7%8E%AF%E5%A2%83.png">
+<meta property="og:image" content="https://xinze.fun/2019/11/19/使用Docker部署Flink大数据项目/%E4%BF%AE%E6%94%B9volumes.png">
+<meta property="og:updated_time" content="2019-11-19T16:39:29.242Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="flink使用09-DataSet初体验之通过Inputformat构建dataSet">
-<meta name="twitter:description" content="Flink 提供了一套 DataSet 的 API 来做批处理. 其实 DataSet 的使用方法还是和 DataStream 很相似的, 本章主要是先简单的说一下 DataSet 的基本使用.  DataSet API 其实和 DataStream ApI 相似, 都是需要创建 ExecutionEnvironment 环境, 然后通过 ExecutionEnvironment 环境提供的方法读">
+<meta name="twitter:title" content="使用Docker部署Flink大数据项目">
+<meta name="twitter:description" content="本文是为基于Flink的商品推荐系统所搭建的Docker环境，目的为了方便体验项目，一键部署项目需要的所有环境，并预填充所需要的数据。完整的环境包括Zookeeper 、Kafka 、 Hbase 、 Mysql 、 Redis 、 Flink 。 环境介绍： zookeeper 3.4.5 kafka 2.12-2.2.1 hbase 1.5.0 mysql 8.0.18 redis flink">
+<meta name="twitter:image" content="https://xinze.fun/2019/11/19/使用Docker部署Flink大数据项目/%E5%AE%B9%E5%99%A8%E7%8E%AF%E5%A2%83.png">
 
 
 
@@ -127,13 +130,13 @@
 
 
 
-  <link rel="canonical" href="https://xinze.fun/2019/09/29/flink使用09-DataSet初体验之通过Inputformat构建dataSet/">
+  <link rel="canonical" href="https://xinze.fun/2019/11/19/使用Docker部署Flink大数据项目/">
 
 
 
 
 
-  <title>flink使用09-DataSet初体验之通过Inputformat构建dataSet | xinze's Blog</title>
+  <title>使用Docker部署Flink大数据项目 | xinze's Blog</title>
   
 
 
@@ -263,7 +266,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://xinze.fun/2019/09/29/flink使用09-DataSet初体验之通过Inputformat构建dataSet/">
+    <link itemprop="mainEntityOfPage" href="https://xinze.fun/2019/11/19/使用Docker部署Flink大数据项目/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="xinze">
@@ -280,7 +283,7 @@
 
         
         
-          <h2 class="post-title" itemprop="name headline">flink使用09-DataSet初体验之通过Inputformat构建dataSet</h2>
+          <h2 class="post-title" itemprop="name headline">使用Docker部署Flink大数据项目</h2>
         
 
         <div class="post-meta">
@@ -292,8 +295,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-29T20:54:07+08:00">
-                2019-09-29
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-19T19:02:04+08:00">
+                2019-11-19
               </time>
             
 
@@ -315,8 +318,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/flink/" itemprop="url" rel="index">
-                    <span itemprop="name">flink</span>
+                  <a href="/categories/docker/" itemprop="url" rel="index">
+                    <span itemprop="name">docker</span>
                   </a>
                 </span>
 
@@ -352,25 +355,55 @@
       
 
       
-        <p>Flink 提供了一套 DataSet 的 API 来做批处理. 其实 DataSet 的使用方法还是和 DataStream 很相似的, 本章主要是先简单的说一下 DataSet 的基本使用. </p>
-<p>DataSet API 其实和 DataStream ApI 相似, 都是需要创建 ExecutionEnvironment 环境, 然后通过 ExecutionEnvironment 环境提供的方法读取外部数据, 将外部数据转换为 DataSet 数据集, 之后利用 DataSet 提供的 API 进行转换操作, 并处理成最后的结果, 并对结果进行输出.</p>
-<h3 id="DataSources-数据输入"><a href="#DataSources-数据输入" class="headerlink" title="DataSources 数据输入"></a>DataSources 数据输入</h3><p>数据输入共有3种类型的接口, 分别是文件系统类型 / Java Collection 类型 / 以及通用数据类型. 其中前两种其实与 DataStream类型, 在前面的系列文章中已经说过了, 这边主要再说一下 通用数据类型接口怎样使用.</p>
-<p>DataSet ApI 提供了 Inputformat 通用的数据接口, 已接入不同的数据源和格式类型的数据. Inputformat 接口主要分为两种类型: 一种是基于文件类型, 在 DataSet API 对应的 readFile( ) 方法; 另外一种是基于通用数据类型的接口, 例如读取 RDBMS 或者 NoSQL 数据库等.</p>
-<p>下面一个方法就以读取一个csv文件的方式举例, 其中首先定义好了每一行的转换类型, 之后将每一行数据输入都转换为对应的 pojo. 使用 env.createInput() 将 PojoCsvInputFormat 转换为 dataSet.</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> &lt;T&gt; <span class="function">DataSet&lt;T&gt; <span class="title">getSource</span><span class="params">(ExecutionEnvironment env, String path, String[] fieldOrder, Class&lt;T&gt; type)</span> <span class="keyword">throws</span> URISyntaxException </span>&#123;</span><br><span class="line">        <span class="comment">// 本地文件路径</span></span><br><span class="line">        URL fileUrl = InputFormatExample.class.getClassLoader().getResource(path);</span><br><span class="line">        Path filePath = Path.fromLocalFile(<span class="keyword">new</span> File(fileUrl.getPath()));</span><br><span class="line">        <span class="comment">// 抽取  TypeInformation，是一个 PojoTypeInfo</span></span><br><span class="line">        PojoTypeInfo&lt;T&gt; pojoType = (PojoTypeInfo&lt;T&gt;) TypeExtractor.createTypeInfo(type);</span><br><span class="line">        <span class="comment">// 由于 Java 反射抽取出的字段顺序是不确定的，需要显式指定下文件中字段的顺序</span></span><br><span class="line">        <span class="comment">// 创建 PojoCsvInputFormat</span></span><br><span class="line">        PojoCsvInputFormat&lt;T&gt; csvInput = <span class="keyword">new</span> PojoCsvInputFormat&lt;&gt;(filePath, pojoType, fieldOrder);</span><br><span class="line">        <span class="keyword">return</span> env.createInput(csvInput, pojoType);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+        <p>本文是为<a href="https://github.com/CheckChe0803/flink-recommandSystem-demo" target="_blank" rel="noopener">基于Flink的商品推荐系统</a>所搭建的Docker环境，目的为了方便体验项目，一键部署项目需要的所有环境，并预填充所需要的数据。完整的环境包括Zookeeper 、Kafka 、 Hbase 、 Mysql 、 Redis 、 Flink 。</p>
+<h2 id="环境介绍："><a href="#环境介绍：" class="headerlink" title="环境介绍："></a>环境介绍：</h2><ul>
+<li>zookeeper 3.4.5</li>
+<li>kafka 2.12-2.2.1</li>
+<li>hbase 1.5.0</li>
+<li>mysql 8.0.18</li>
+<li>redis</li>
+<li>flink 1.9.0</li>
+</ul>
+<p><img src="/2019/11/19/使用Docker部署Flink大数据项目/%E5%AE%B9%E5%99%A8%E7%8E%AF%E5%A2%83.png" alt></p>
+<p>整个项目的部署和工作环境如上图所示。由于 kafka 和 hbase 均需要 zookeeper 的支持，所以没有使用集成式的 hbase docker镜像，所以笔者自己基于 hbase 1.5.0 制作了一版镜像，由于 hbase 的 standlone模式端口会随机生成，故也搭建成了伪分布式，HMaster 和 HRegionserver均在同一个 Docker Container 中。 在Kafka容器中，配置了对内对外两个地址，这是为了方便远程的队列消费，以及在容器内自动生产消息。</p>
+<h2 id="搭建步骤："><a href="#搭建步骤：" class="headerlink" title="搭建步骤："></a>搭建步骤：</h2><h3 id="1-拉取镜像并启动"><a href="#1-拉取镜像并启动" class="headerlink" title="1. 拉取镜像并启动"></a>1. 拉取镜像并启动</h3><p>首先请下载 <a href>目录</a> 内的所有文件，因为mysql和hbase需要插入数据，kafka需要启动一个shell脚本自动的模拟用户点击行为。对应的请修改docker-compose.yml文件中对应的文件地址为自己所保存的地址。</p>
+<p><img src="/2019/11/19/使用Docker部署Flink大数据项目/%E4%BF%AE%E6%94%B9volumes.png" alt></p>
+<p>首先请保证已经成功安装了docker和docker-compose，其次请将docker-compose.yml文件中的 hbase 的 <code>hostname</code> 修改为自己的主机名。</p>
+<p><strong>最后通过docker-compose启动所有容器</strong>：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@docker-linux recommend]# docker-compose up -d</span><br></pre></td></tr></table></figure>
 
-<h3 id="DataSet-转换操作"><a href="#DataSet-转换操作" class="headerlink" title="DataSet 转换操作"></a>DataSet 转换操作</h3><p>Flink 提供了丰富的 API 对 dataSet 做转换处理, 例如数据处理(Map / FlatMap / MapPartiton / Filter), 聚合操作(Reduce / ReduceGroup / Aggregate), 多表关联(Join / OuterJoin / Cogroup / Cross), 集合操作 (Union / Rebalance / Hash-Partition / Range-Partition / Sort Partition), 排序操作(first / minBy / maxBy). 具体的API操作太多, 本文就不一一赘述了,这里就将一些 join 方法的使用.</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 与流处理的合并类型, 也是依靠 where().equalTO()来实现两个dataSet的判断</span></span><br><span class="line">dataSet1.join(dataSet2).where(<span class="string">"key"</span>).equalTo(<span class="string">"key"</span>).with(&lt;JoinFunction&gt;)</span><br></pre></td></tr></table></figure>
+<h3 id="2-给-Mysql-Redis-填充数据，给-Hbase-创建表结构"><a href="#2-给-Mysql-Redis-填充数据，给-Hbase-创建表结构" class="headerlink" title="2. 给 Mysql / Redis 填充数据，给 Hbase 创建表结构"></a>2. 给 Mysql / Redis 填充数据，给 Hbase 创建表结构</h3><p>进入mysql container， 连接mysql</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@docker-linux recommend]# docker exec -ti mysql bash</span><br><span class="line">root@6fdc02332cd0:/# mysql -u root -p</span><br></pre></td></tr></table></figure>
 
-<p> 下面一个例子展示了如何去使用 join 方法关联两个 dataSet.</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">		<span class="comment">// 首先使用上面讲到的方法读取csv文件数据,转为DataSet&lt;POJO&gt;</span></span><br><span class="line">		<span class="comment">// item dataSet 格式为(id, price)</span></span><br><span class="line">        String itemPath = <span class="string">"item.csv"</span>;</span><br><span class="line">        String[] itemField = <span class="keyword">new</span> String[]&#123;<span class="string">"id"</span>, <span class="string">"price"</span>&#125;; <span class="comment">// java反射会导致乱序,手动指定字段序</span></span><br><span class="line">        DataSet&lt;Item&gt; items = getSource(env, itemPath, itemField, Item.class);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// info dataSet 格式为(id, color, country)</span></span><br><span class="line">        String infoPath = <span class="string">"info.csv"</span>;</span><br><span class="line">        String[] infoField = <span class="keyword">new</span> String[]&#123;<span class="string">"id"</span>, <span class="string">"color"</span>, <span class="string">"country"</span>&#125;;</span><br><span class="line">        DataSet&lt;Info&gt; infos = getSource(env, infoPath, infoField, Info.class);</span><br><span class="line">        <span class="comment">// 关联两个dataset</span></span><br><span class="line">        JoinOperator.DefaultJoin&lt;Item, Info&gt; dataSet = items.join(infos).where(<span class="string">"id"</span>).equalTo(<span class="string">"id"</span>);</span><br><span class="line">        <span class="comment">// 使用 joinFunction 处理合并后的两个dataSet</span></span><br><span class="line">        dataSet.with(<span class="keyword">new</span> JoinFunction&lt;Item, Info, String&gt;() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> String <span class="title">join</span><span class="params">(Item item, Info info)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="string">"商品ID:"</span> + item.getId() + <span class="string">" 价格:"</span>+item.getPrice() + <span class="string">" 颜色:"</span>+ info.getColor() + <span class="string">" 国家:"</span> + info.getCountry();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;).print();</span><br><span class="line"><span class="comment">// 样例数据结果:↓↓↓↓↓</span></span><br><span class="line"><span class="comment">//商品ID:1 价格:50 颜色:red 国家:china</span></span><br><span class="line"><span class="comment">//商品ID:2 价格:120 颜色:black 国家:usa</span></span><br><span class="line"><span class="comment">//商品ID:3 价格:89 颜色:green 国家:korea</span></span><br></pre></td></tr></table></figure>
+<p>通过提前制作好的sql文件填充mysql</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">mysql&gt;</span> source /opt/contact.sql</span><br></pre></td></tr></table></figure>
 
-<h3 id="DataSinks-数据输出"><a href="#DataSinks-数据输出" class="headerlink" title="DataSinks 数据输出"></a>DataSinks 数据输出</h3><p>为了能够让用户更灵活的使用外部数据, Flink抽象出通用的 OutputFormat 接口, 批量数据输出全部实现于此接口.</p>
-<p>Flink 内置了常用的数据存储介质对应的接口, 如 TextOutputFormat /CsvOutputFormat / HadoopOutputFormat / JDBCOutputFormat 等. </p>
-<p>Flink 在 DataSet ApI 中的数据输出总共以下3类:</p>
-<h4 id="1-基于文件输出接口"><a href="#1-基于文件输出接口" class="headerlink" title="1. 基于文件输出接口"></a>1. 基于文件输出接口</h4><p>WriteAsText / WriteAsCsv. 可以直接使用这两个方法输出到文件, 用户也可以指定写入文件的模式, 分为 OVERWRITE 模式(覆盖) 和 NOT_OVERWRITE 模式(不覆盖 ). 均可以写到hdfs或者本地</p>
-<h4 id="2-通用数据接口"><a href="#2-通用数据接口" class="headerlink" title="2. 通用数据接口"></a>2. 通用数据接口</h4><p>用户可以自己自定义OutputFormat 方法来定义存储, 例如 HadoopOutputFormat.</p>
-<h4 id="3-客户端输出"><a href="#3-客户端输出" class="headerlink" title="3. 客户端输出"></a>3. 客户端输出</h4><p>如果想在本地调试的话, 那么最简单的方式就是通过 print()的方法直接将flink的数据拉回到client, 然后输出.</p>
+<p>之后是构建 hbase 表结构</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@docker-linux recommend]# docker exec -ti hbase bash</span><br><span class="line">root@docker-linux:/opt/hbase# hbase shell /opt/hbase_ini.sql</span><br></pre></td></tr></table></figure>
+
+<p>通过 list 命令可以看到我们创建的表都已成功</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">hbase(main):001:0&gt; list</span><br><span class="line">TABLE                                                             ··· </span><br><span class="line">8 row(s) in 0.1390 seconds</span><br><span class="line">=&gt; ["con", "p_history", "prod", "ps", "px", "u_history", "u_interest", "user"]</span><br></pre></td></tr></table></figure>
+
+<p>最后进入redis，创建10个热度数据</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@docker-linux recommend]# docker exec -ti redis bash</span><br><span class="line">root@7735aff1391f:/bin# redis-cli</span><br></pre></td></tr></table></figure>
+
+<p>启动客户端后，之后按照如下格式创建 set 0  123之类的创建从0-9的10条数据即可，最后一位为商品id，在0-999内任意取值。</p>
+<h3 id="3-启动-Kafka-消息生成器"><a href="#3-启动-Kafka-消息生成器" class="headerlink" title="3. 启动 Kafka 消息生成器"></a>3. 启动 Kafka 消息生成器</h3><p>进入kafka容器并启动shell脚本即可，脚本会按照每秒一次的频率发送message到log这个topic里。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@docker-linux recommend]# docker exec -ti kafka bash</span><br><span class="line">bash-4.4# sh /opt/generator.sh -d</span><br></pre></td></tr></table></figure>
+
+<p>验证成功发送消息的方法是重新开一个连接进入kafka容器并启动Consumer，注意kafka内部端口号配置的是9093</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bash-4.4# $KAFKA_HOME/bin/kafka-console-consumer.sh --bootstrap-server kafka:9093 --topic log</span><br></pre></td></tr></table></figure>
+
+<p>正确看到如下格式的消息即可</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">558,559,1574180802,1</span><br><span class="line">576,576,1574180819,3</span><br><span class="line">585,585,1574180828,3</span><br><span class="line">594,594,1574180837,3</span><br><span class="line">603,603,1574180846,3</span><br><span class="line">613,613,1574180856,1</span><br></pre></td></tr></table></figure>
+
+<h2 id="执行任务："><a href="#执行任务：" class="headerlink" title="执行任务："></a>执行任务：</h2><p>我们这个项目一共有6个flink的任务，如果只是在本地测试的话，可以直接在IDEA中启动对应的任务即可，为了做实验，我们把项目打包并提交到 Docker 的 Flink 中，为了方便就不再把各种依赖单独放到集群中，而是直接打到任务的jar包中。正确的打包方法可以参考<a href="https://xinze.fun/2019/11/14/flink%E4%BD%BF%E7%94%A816-%E6%AD%A3%E7%A1%AE%E6%89%93%E5%8C%85Flink%E7%A8%8B%E5%BA%8F%E5%B9%B6%E4%BD%BF%E7%94%A8Cli%E6%8F%90%E4%BA%A4%E4%BB%BB%E5%8A%A1/">这篇博客</a></p>
+<p>我们直接把打包好的jar包放到集群中，并拷贝到flink的docker中(jobmanager)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@docker-linux pkg]# docker cp ./logtask.jar flink_jobmanager:/opt/</span><br></pre></td></tr></table></figure>
+
+<p>然后进入flink jobmanager的容器中，提交jar包到集群</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@docker-linux pkg]# docker exec -ti flink_jobmanager bash</span><br><span class="line">root@0f5edbeeecb9:/opt/flink# flink run /opt/logtask.jar</span><br></pre></td></tr></table></figure>
+
 
       
     </div>
@@ -388,9 +421,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/flnik/" rel="tag"><i class="fa fa-tag"></i> flnik</a>
+            <a href="/tags/docker/" rel="tag"><i class="fa fa-tag"></i> docker</a>
           
-            <a href="/tags/dataset/" rel="tag"><i class="fa fa-tag"></i> dataset</a>
+            <a href="/tags/flink-recommend-demo/" rel="tag"><i class="fa fa-tag"></i> flink-recommend-demo</a>
           
         </div>
       
@@ -403,8 +436,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/09/27/flink使用08-在dataStream中使用AsyncFunction/" rel="next" title="flink使用08-在dataStream中使用AsyncFunction">
-                <i class="fa fa-chevron-left"></i> flink使用08-在dataStream中使用AsyncFunction
+              <a href="/2019/11/14/flink使用16-正确打包Flink程序并使用Cli提交任务/" rel="next" title="flink使用16-正确打包Flink程序并使用Cli提交任务">
+                <i class="fa fa-chevron-left"></i> flink使用16-正确打包Flink程序并使用Cli提交任务
               </a>
             
           </div>
@@ -412,10 +445,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2019/10/02/flink使用10-通过Bulk-iterator计算圆周率/" rel="prev" title="flink使用10-通过Bulk iterator计算圆周率">
-                flink使用10-通过Bulk iterator计算圆周率 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -563,7 +592,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#DataSources-数据输入"><span class="nav-number">1.</span> <span class="nav-text">DataSources 数据输入</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DataSet-转换操作"><span class="nav-number">2.</span> <span class="nav-text">DataSet 转换操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DataSinks-数据输出"><span class="nav-number">3.</span> <span class="nav-text">DataSinks 数据输出</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-基于文件输出接口"><span class="nav-number">3.1.</span> <span class="nav-text">1. 基于文件输出接口</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-通用数据接口"><span class="nav-number">3.2.</span> <span class="nav-text">2. 通用数据接口</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-客户端输出"><span class="nav-number">3.3.</span> <span class="nav-text">3. 客户端输出</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#环境介绍："><span class="nav-number">1.</span> <span class="nav-text">环境介绍：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#搭建步骤："><span class="nav-number">2.</span> <span class="nav-text">搭建步骤：</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-拉取镜像并启动"><span class="nav-number">2.1.</span> <span class="nav-text">1. 拉取镜像并启动</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-给-Mysql-Redis-填充数据，给-Hbase-创建表结构"><span class="nav-number">2.2.</span> <span class="nav-text">2. 给 Mysql / Redis 填充数据，给 Hbase 创建表结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-启动-Kafka-消息生成器"><span class="nav-number">2.3.</span> <span class="nav-text">3. 启动 Kafka 消息生成器</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#执行任务："><span class="nav-number">3.</span> <span class="nav-text">执行任务：</span></a></li></ol></div>
             
 
           </div>
