@@ -96,7 +96,8 @@
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://xinze.fun/2019/11/19/使用Docker部署Flink大数据项目/%E5%AE%B9%E5%99%A8%E7%8E%AF%E5%A2%83.png">
 <meta property="og:image" content="https://xinze.fun/2019/11/19/使用Docker部署Flink大数据项目/%E4%BF%AE%E6%94%B9volumes.png">
-<meta property="og:updated_time" content="2019-11-19T16:39:29.242Z">
+<meta property="og:image" content="https://xinze.fun/2019/11/19/使用Docker部署Flink大数据项目/flink%E7%95%8C%E9%9D%A2.png">
+<meta property="og:updated_time" content="2019-11-20T05:03:20.640Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="使用Docker部署Flink大数据项目">
 <meta name="twitter:description" content="本文是为基于Flink的商品推荐系统所搭建的Docker环境，目的为了方便体验项目，一键部署项目需要的所有环境，并预填充所需要的数据。完整的环境包括Zookeeper 、Kafka 、 Hbase 、 Mysql 、 Redis 、 Flink 。 环境介绍： zookeeper 3.4.5 kafka 2.12-2.2.1 hbase 1.5.0 mysql 8.0.18 redis flink">
@@ -404,6 +405,8 @@
 <p>然后进入flink jobmanager的容器中，提交jar包到集群</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@docker-linux pkg]# docker exec -ti flink_jobmanager bash</span><br><span class="line">root@0f5edbeeecb9:/opt/flink# flink run /opt/logtask.jar</span><br></pre></td></tr></table></figure>
 
+<p>提交成功后可以在Flink WebUI观察我们提交的任务</p>
+<p><img src="/2019/11/19/使用Docker部署Flink大数据项目/flink%E7%95%8C%E9%9D%A2.png" alt></p>
 
       
     </div>
