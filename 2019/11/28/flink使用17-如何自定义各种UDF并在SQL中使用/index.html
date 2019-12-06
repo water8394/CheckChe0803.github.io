@@ -75,7 +75,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT">
+  <meta name="keywords" content="flink,udf,">
 
 
 
@@ -86,14 +86,18 @@
 
 
 
+<meta name="description" content="今天主要讲一下Flink SQL 中怎样使用 UDF ，目前1.9版本可用的UDF包括Scalar Function 、 Table Function 、 Aggregateion Function 、 Table Aggregation Function。完整代码见仓库 -&amp;gt; Github 如果注册一个 UDF？注册的方法很简单，使用 TableEnvironment的registerFu">
+<meta name="keywords" content="flink,udf">
 <meta property="og:type" content="article">
 <meta property="og:title" content="flink使用17-如何自定义各种UDF并在SQL中使用">
 <meta property="og:url" content="https://xinze.fun/2019/11/28/flink使用17-如何自定义各种UDF并在SQL中使用/index.html">
 <meta property="og:site_name" content="xinze&#39;s Blog">
+<meta property="og:description" content="今天主要讲一下Flink SQL 中怎样使用 UDF ，目前1.9版本可用的UDF包括Scalar Function 、 Table Function 、 Aggregateion Function 、 Table Aggregation Function。完整代码见仓库 -&amp;gt; Github 如果注册一个 UDF？注册的方法很简单，使用 TableEnvironment的registerFu">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-11-28T10:03:56.524Z">
+<meta property="og:updated_time" content="2019-12-06T08:20:51.007Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="flink使用17-如何自定义各种UDF并在SQL中使用">
+<meta name="twitter:description" content="今天主要讲一下Flink SQL 中怎样使用 UDF ，目前1.9版本可用的UDF包括Scalar Function 、 Table Function 、 Aggregateion Function 、 Table Aggregation Function。完整代码见仓库 -&amp;gt; Github 如果注册一个 UDF？注册的方法很简单，使用 TableEnvironment的registerFu">
 
 
 
@@ -299,6 +303,28 @@
           </span>
 
           
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/flink/" itemprop="url" rel="index">
+                    <span itemprop="name">flink</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
 
           
             
@@ -326,7 +352,33 @@
       
 
       
-        
+        <p>今天主要讲一下Flink SQL 中怎样使用 UDF ，目前1.9版本可用的UDF包括Scalar Function 、 Table Function 、 Aggregateion Function 、 Table Aggregation Function。完整代码见仓库 -&gt; <a href="https://github.com/CheckChe0803/flink-simple-tutorial/tree/master/table/src/main/java/udf" target="_blank" rel="noopener">Github</a></p>
+<h3 id="如果注册一个-UDF？"><a href="#如果注册一个-UDF？" class="headerlink" title="如果注册一个 UDF？"></a>如果注册一个 UDF？</h3><p>注册的方法很简单，使用 <code>TableEnvironment</code>的registerFunction()方法就可以了。</p>
+<h3 id="Scalar-Function"><a href="#Scalar-Function" class="headerlink" title="Scalar Function"></a>Scalar Function</h3><p>scalar Function 是一个一对一的转换。</p>
+<p>这里我们以一个求字符串长度的方式来演示，首先需要继承ScalarFunction,需要重新实现eval()方法。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">StringLength</span> <span class="keyword">extends</span> <span class="title">ScalarFunction</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">eval</span><span class="params">(String s)</span></span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (s == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> s.length();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>之后只需要注册该方法就可以使用了</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">tEnv.registerFunction(<span class="string">"stringLength"</span>,<span class="keyword">new</span> StringLength());</span><br><span class="line"></span><br><span class="line">tEnv.sqlQuery(<span class="string">"select word,stringLength(word) from t"</span>);</span><br></pre></td></tr></table></figure>
+
+<h3 id="Table-Function"><a href="#Table-Function" class="headerlink" title="Table Function"></a>Table Function</h3><p>Table Function是将一行数据转为多行数据的一个方法。</p>
+<p>在这里用一个将一个字符串切割成多行的例子来演示</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">StringSplit</span> <span class="keyword">extends</span> <span class="title">TableFunction</span>&lt;<span class="title">Row</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">eval</span><span class="params">(String str)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">for</span> (String s : str.split(<span class="string">"#"</span>)) &#123;</span><br><span class="line">            Row row = <span class="keyword">new</span> Row(<span class="number">2</span>);</span><br><span class="line">            row.setField(<span class="number">0</span>, s);</span><br><span class="line">            row.setField(<span class="number">1</span>, s.length());</span><br><span class="line">            <span class="comment">// 使用collect（）来收集需要返回的数据</span></span><br><span class="line">            collect(row);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> TypeInformation&lt;Row&gt; <span class="title">getResultType</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> RowTypeInfo(Types.STRING,Types.INT);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>需要注意在实现eval（）方法的同时，也需要实现getResultType（）方法，用来告诉flink返回值的类型，方便其转换。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">tEnv.registerFunction(<span class="string">"split"</span>, <span class="keyword">new</span> StringSplit());</span><br><span class="line">tEnv.sqlQuery(<span class="string">"SELECT a,word, length FROM t, LATERAL TABLE(split(a)) as T(word, length)"</span>);</span><br></pre></td></tr></table></figure>
+
+<p><strong>LATERAL TABLE</strong>(split(a)) 的作用相当于 join。</p>
+<h3 id="Aggregateion-Function"><a href="#Aggregateion-Function" class="headerlink" title="Aggregateion Function"></a>Aggregateion Function</h3><p> Aggregateion Function函数顾名思义是用来做聚合操作的。</p>
+<p>这里我用一个求均值的函数来演示</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Mean</span> <span class="keyword">extends</span> <span class="title">AggregateFunction</span>&lt;<span class="title">Integer</span>, <span class="title">MeanValue</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Integer <span class="title">getValue</span><span class="params">(MeanValue accumulator)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> accumulator.sum/accumulator.count;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> MeanValue <span class="title">createAccumulator</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> MeanValue();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">accumulate</span><span class="params">(MeanValue acc, <span class="keyword">int</span> iValue)</span> </span>&#123;</span><br><span class="line">        acc.sum += iValue;</span><br><span class="line">        acc.count ++;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">merge</span><span class="params">(MeanValue acc, Iterable&lt;MeanValue&gt; it)</span> </span>&#123;</span><br><span class="line">        Iterator&lt;MeanValue&gt; iter = it.iterator();</span><br><span class="line">        <span class="keyword">while</span> (iter.hasNext()) &#123;</span><br><span class="line">            MeanValue a = iter.next();</span><br><span class="line">            acc.count += a.count;</span><br><span class="line">            acc.sum += a.sum;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">resetAccumulator</span><span class="params">(MeanValue acc)</span> </span>&#123;</span><br><span class="line">        acc.count = <span class="number">0</span>;</span><br><span class="line">        acc.sum = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Aggregateion Function 与流处理的Aggregateion Function也是很类似的，都需要自己创建累加器，之后就是控制对累加器的操作就可以了。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">tEnv.registerFunction(<span class="string">"get_mean"</span>, <span class="keyword">new</span> Mean());</span><br><span class="line">tEnv.sqlQuery(<span class="string">"SELECT name,get_mean(v) as mean_value FROM t3 GROUP BY name"</span>);</span><br></pre></td></tr></table></figure>
+
+<p><a href="https://ci.apache.org/projects/flink/flink-docs-release-1.9/dev/table/udfs.html" target="_blank" rel="noopener">参考文章1</a></p>
+<p><a href="https://cloud.tencent.com/developer/article/1172926" target="_blank" rel="noopener">参考文章2</a></p>
+
       
     </div>
     
@@ -340,6 +392,14 @@
     
 
     <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/flink/" rel="tag"><i class="fa fa-tag"></i> flink</a>
+          
+            <a href="/tags/udf/" rel="tag"><i class="fa fa-tag"></i> udf</a>
+          
+        </div>
       
 
       
@@ -410,8 +470,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -448,7 +517,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">18</span>
+                  <span class="site-state-item-count">19</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -487,6 +556,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#如果注册一个-UDF？"><span class="nav-number">1.</span> <span class="nav-text">如果注册一个 UDF？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Scalar-Function"><span class="nav-number">2.</span> <span class="nav-text">Scalar Function</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Table-Function"><span class="nav-number">3.</span> <span class="nav-text">Table Function</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Aggregateion-Function"><span class="nav-number">4.</span> <span class="nav-text">Aggregateion Function</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
@@ -532,7 +617,7 @@
 </span>
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共14.2k字</span>
+  <span class="post-count">博客全站共14.8k字</span>
 </div>
         
 
