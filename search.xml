@@ -4,6 +4,27 @@
   
     
     <entry>
+      <title>Vi Tips</title>
+      <link href="/2020/09/12/Vi-Tips/"/>
+      <url>/2020/09/12/Vi-Tips/</url>
+      
+        <content type="html"><![CDATA[<h3 id="Note-tips-of-Vi"><a href="#Note-tips-of-Vi" class="headerlink" title="Note tips of Vi"></a>Note tips of Vi</h3><blockquote><p><strong>Shortcuts</strong></p><p>dd   # delete a line</p><p>3dd  # delete 3 lines</p><p>u  # undo you last action</p><p>command + r  # redo something</p></blockquote><ol><li><p>different ways to quit text</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">:q   # just quit</span><br><span class="line">:q!  # force quit without any changes</span><br><span class="line">:wq  # quit with saving changes</span><br></pre></td></tr></table></figure></li></ol><ol start="2"><li><p>show row number</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">:set nu</span><br></pre></td></tr></table></figure></li><li><p>search some string</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/searchString</span><br></pre></td></tr></table></figure></li><li><p>set to search in ignore case sensitive</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">:set ic      # ignore case</span><br><span class="line">:set noic    # not ignore case</span><br></pre></td></tr></table></figure></li><li><p>search and replace</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">:%s/stringPattern/youNeed/g</span><br></pre></td></tr></table></figure></li><li><p>Sort lines</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">:startNum,endNum!sort # similarly we can do sort, awk, tr etc</span><br></pre></td></tr></table></figure></li></ol>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> vi </tag>
+            
+            <tag> editor </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>English Daily</title>
       <link href="/2020/09/12/English-Daily/"/>
       <url>/2020/09/12/English-Daily/</url>
