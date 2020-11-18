@@ -352,7 +352,7 @@
       
         
           
-          Flink 中支持窗口上的多流合并, 需要保证的是输入的 stream 要构建在相同的 Window 上, 并使用相同类型的 Key 作为关联条件.代码如下所示, 先通过 join 方法将 inputStream1 数据集和 inputStream2 关联, 调用 where( ) 方法指定  in
+          Flink 中支持窗口上的多流合并, 需要保证的是输入的 stream 要构建在相同的 Window 上, 并使用相同类型的 Key 作为关联条件.代码如下所示, 先通过 join 方法将 inputStream1 数据集和 inputStream2 关联, 调用 where( ) 方法指定  inputStream1 的 key, 调用 equalTo( ) 方法指定 inputStream2 
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -501,7 +501,7 @@
         
           
           上一节主要是大致介绍了下 flink 的窗口组成, 以及如何去划分窗口的. 那么这一篇文章主要是对剩下的内容做一下总结, 说一下如何对窗口内的数据做处理.  
-Window FunctionWindow Assigner 的作用是划分窗口的, 而 Window Function 就是对窗口内的数据做
+Window FunctionWindow Assigner 的作用是划分窗口的, 而 Window Function 就是对窗口内的数据做处理的一个过程. Flink 提供了 4 种类型的 Window Function, 分别是 Red
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -650,7 +650,8 @@ Window FunctionWindow Assigner 的作用是划分窗口的, 而 Window Function 
         
           
           1. 窗口组成简介窗口是流式计算中非常重要的一个概念, 很多常见的功能都是通过各种窗口实现的, 比如每5分钟统计一下刚去1小时的热度. Flink DataStream API 将窗口独立成 Operator. 每个窗口算子包含了以下几个部分:
-Windows Assigner指定窗口的类型, 定义
+Windows Assigner指定窗口的类型, 定义如何将数据流分配到一个或者多个窗口
+Windows Trigger指定窗口触发的时机, 定义窗口满足
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -800,7 +801,7 @@ Windows Assigner指定窗口的类型, 定义
           
           时间概念在做实时计算的时候, 首先就需要搞清楚一个问题, 这个实时到底是怎么样的一个时间概念. 在 Flink 中, 总共有3种时间概念, 分别是 事件时间 ( Event time ) / 处理时间 ( Processing time ) / 接入时间 ( Ingestion time).
 
-事件
+事件时间 ( Event time )就是真实的用户发生操作的时候所产生的时间, 对应到 flink 中
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -951,7 +952,7 @@ Windows Assigner指定窗口的类型, 定义
           flink的数据输入源主要分为两大类:1. 内置数据源
 集合数据源
 可以将数组或者集合作为 flink 的数据源,分别有不同的方法可以使用, 这种方式比较适合本地调试使用
-12345678// 添加数组作为数据输入源String[] elementInput = new String[]&#123;
+12345678// 添加数组作为数据输入源String[] elementInput = new String[]&#123;&quot;hello Flink&quot;, &quot;Second Line&quot;&#
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -1104,7 +1105,7 @@ Windows Assigner指定窗口的类型, 定义
 
 1. 获取执行 Environment
 
-envi
+environment 提供控制 job 执行的方法(例如设置并行度/容错/checkpoint 参数) 并
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -1253,7 +1254,8 @@ envi
         
           
           ​    Flink 是一款能够同时支持高吞吐/低延迟/高性能的分布式处理框架.
-​    本系列叫做 &lt;Flink简易使用教程&gt;,  目的是记录自己学习 flink 的过程,并且把使用flink的方方面面介绍给大家.尽量用简单的话把使用方法说清楚,在使用某个具体功能的时候能够快速的查找
+​    本系列叫做 &lt;Flink简易使用教程&gt;,  目的是记录自己学习 flink 的过程,并且把使用flink的方方面面介绍给大家.尽量用简单的话把使用方法说清楚,在使用某个具体功能的时候能够快速的查找到该使用方法.
+​    本系列的主要例子会从 flink 官方仓库的 example 出发, 通过
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -1422,7 +1424,7 @@ envi
       <div class="footer-inner">
         <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 
-<div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+<div class="copyright">&copy; 2019 &mdash; <span itemprop="copyrightYear">2020</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>

@@ -354,7 +354,7 @@
           
           本文的计划是使用正确的maven插件打包当前教程代码库batch模块下的WordCount代码，并通过命令行的方式提交到Flink来启动任务。WordCount类即为Flink主方法类，该部分代码是Flink官方example的简单修改，只是对map方法填加了一点sleep来方便观察运行情况。
 
-项
+项目的运行环境使用Docker来部署Flink， Flink镜像可以从Docker hub上拉去，其D
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -503,7 +503,9 @@
         
           
           本文是我在使用Docker部署kafka遇到一些问题之后，在网上看到的一篇比较优秀的英文资料Link。借此翻译一下这篇文章，也帮助自己搞懂在使用Docker时遇到的一些网络问题，尤其是Host怎样配置。
-作者的Kafka使用环境是Kafka Producer 和 Broker 均在 Docker 网
+作者的Kafka使用环境是Kafka Producer 和 Broker 均在 Docker 网络中， Kafka Consumer 在宿主机环境中。结构如下图这样子：
+
+首先，我从Docker 
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -651,7 +653,11 @@
       
         
           
-          本文主要介绍如何使用 FLink SQL 自己的 DDL语言来构建基于 kafka 的表和 基于Mysql 的表，并直接把从 kafka 接过来的 Json 格式的数据转换为 表结构后直接写入到Mysql，有了这样的经验之后，大家可以自行修改 DML操作来实现不同的业务。文章内容参考了一些阿里云邪大
+          本文主要介绍如何使用 FLink SQL 自己的 DDL语言来构建基于 kafka 的表和 基于Mysql 的表，并直接把从 kafka 接过来的 Json 格式的数据转换为 表结构后直接写入到Mysql，有了这样的经验之后，大家可以自行修改 DML操作来实现不同的业务。文章内容参考了一些阿里云邪大佬的文章Link，写的很好。
+环境配置如下：
+
+zookeeper : 3.4.6
+kafka: 2
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -804,7 +810,14 @@
 
 
 
-Tumble
+Tumble Windows
+HOP Window
+Session Windows
+
+
+
+
+TUMBLE(tim
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -952,7 +965,7 @@ Tumble
       
         
           
-          SQL API 是 Flink 中最顶级的 API , 它构建了 Table API 之上, 也可以方便的和 Table 做转换, 构建 SQL 所使用的Environment 也是 Table Environment .  Flink SQL 底层使用 Apache Calcite 框架, 将标准
+          SQL API 是 Flink 中最顶级的 API , 它构建了 Table API 之上, 也可以方便的和 Table 做转换, 构建 SQL 所使用的Environment 也是 Table Environment .  Flink SQL 底层使用 Apache Calcite 框架, 将标准的 Flink SQL 语句解析并转换成底层的算子处理逻辑. 下面就直接用 Flink 官方仓库中的
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -1103,7 +1116,7 @@ Tumble
           Table API 是 Flink 构建在 DataSet 和 DataStream API 之上的一套结构化编程接口. 本文希望通过一个简单的 wordCount 的例子首先来体验一下普通的 Flink Table 的代码是由哪些部分构成的.
 
 获取 TableEnvironment
-Execut
+ExecutionEnvironment 是必不可少的, 不管是Stream API 还是 batch API 
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -1251,7 +1264,8 @@ Execut
       
         
           
-          在Flink中，同一个算子可能存在若干个不同的并行实例，计算过程可能不在同一个Slot中进行，不同算子之间更是如此，因此不同算子的计算数据之间不能像Java数组之间一样互相访问，而广播变量Broadcast便是解决这种情况的. 在 flink 中, 针对某一个算子需要使用公共变量的情况下, 就可以把
+          在Flink中，同一个算子可能存在若干个不同的并行实例，计算过程可能不在同一个Slot中进行，不同算子之间更是如此，因此不同算子的计算数据之间不能像Java数组之间一样互相访问，而广播变量Broadcast便是解决这种情况的. 在 flink 中, 针对某一个算子需要使用公共变量的情况下, 就可以把对应的数据给广播出去, 这样在所有的节点中都可以使用了. 典型的代码结构如下所示:
+在一个算子中使用
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -1400,7 +1414,7 @@ Execut
         
           
            迭代处理是批量处理处理中的常见操作, Flink 的 迭代计算支持两种模式, 分别是 Bulk Iteration (全量迭代计算) 和 Delt Iteration (增量迭代计算). 下面就一个计算圆周率的例子 来说一下使用 Bulk Iteration 都有哪几个步骤.
-在 Bulk Ite
+在 Bulk Iteration 中, 主要的步骤其实是分为3步, 第一步是指定最大循环次数, 第二步是指定在循环时的一
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -1549,7 +1563,7 @@ Execut
         
           
           Flink 提供了一套 DataSet 的 API 来做批处理. 其实 DataSet 的使用方法还是和 DataStream 很相似的, 本章主要是先简单的说一下 DataSet 的基本使用. 
-DataSet API 其实和 DataStream ApI 相似, 都是需要创建 Execution
+DataSet API 其实和 DataStream ApI 相似, 都是需要创建 ExecutionEnvironment 环境, 然后通过 ExecutionEnvironment 环境提供的方法读
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -1698,7 +1712,7 @@ DataSet API 其实和 DataStream ApI 相似, 都是需要创建 Execution
         
           
           在流式处理的过程中, 在中间步骤的处理中, 如果涉及到一些费事的操作或者是外部系统的数据交互, 那么就会给整个流造成一定的延迟. 在 flink 的 1.2 版本中引入了 Asynchronous I/O, 能够支持异步的操作, 以提高 flink 系统与外部数据系统交互的性能及吞吐量.
-在使用 F
+在使用 Flink 的异步 IO 时, 主要有两个 API可以使用, 一个是AsyncDataStream.u
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -1867,7 +1881,7 @@ DataSet API 其实和 DataStream ApI 相似, 都是需要创建 Execution
       <div class="footer-inner">
         <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 
-<div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+<div class="copyright">&copy; 2019 &mdash; <span itemprop="copyrightYear">2020</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>

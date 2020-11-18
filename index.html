@@ -330,7 +330,7 @@
       
         
           
-          让你比世界更快的工作术1. 一次结束2. 给“尽快”一个期限3. 集中精力于此时此刻创建提高工作效率的人际关系的方法1. 消除交流无用功的方法2. 提高工作效率的不是流程而是“人”3. 与关键人物建立联系迅速学习必要技能的方法1. 应该学习的不是知识而是经验2. 与学习相关的“询问”规则3. 利用反
+          让你比世界更快的工作术1. 一次结束2. 给“尽快”一个期限3. 集中精力于此时此刻创建提高工作效率的人际关系的方法1. 消除交流无用功的方法2. 提高工作效率的不是流程而是“人”3. 与关键人物建立联系迅速学习必要技能的方法1. 应该学习的不是知识而是经验2. 与学习相关的“询问”规则3. 利用反馈获得自己意想不到的情报4. 通过交流学习Google 的轻松工作方法1. 将同时进行多项工作的时间
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -464,7 +464,8 @@ u  # undo you last action
 command + r  # redo something
 
 
-different ways to quit 
+different ways to quit text
+123:q   # just quit:q!  # force quit without 
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -593,6 +594,9 @@ different ways to quit
           记录每天一句英语听写
 Day1:
 1Mother Teresa, who received a Nobel Peace Price for her work on behalf of the poor, dies in Calcutta, India -- she was 87 years old.
+
+Day2:
+12Jerry, what time do you have?I have 5 o&
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -729,6 +733,12 @@ Day1:
 1ALTER TABLE table_name SET TBLPROPERTIES(&apos;comment&apos; = new_comment);
 
 
+查看表的创建语句
+
+1SHOW CREATE TABLE table_name
+
+
+创建表并导入t
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -877,7 +887,7 @@ Day1:
         
           
           文章翻译自数砖 原文链接
-Apache Spark 由于其优秀的性能，简单的 API 以及丰富的分析与计算库，被各大企业所广泛的使用。 就像很多其他的大数据系统一样，spark 也是运行在 Java 虚拟机之上（ JVM ）。由于 spark 需要存储大量的数据在内存中， 所以其十分依赖 Java 
+Apache Spark 由于其优秀的性能，简单的 API 以及丰富的分析与计算库，被各大企业所广泛的使用。 就像很多其他的大数据系统一样，spark 也是运行在 Java 虚拟机之上（ JVM ）。由于 spark 需要存储大量的数据在内存中， 所以其十分依赖 Java 的内存管理和垃圾回收机制（GC）。新版本的 spark 会使用 Tungsten 来简化和优化内存的
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -1027,7 +1037,7 @@ Apache Spark 由于其优秀的性能，简单的 API 以及丰富的分析与�
           
           本文翻译自 Chendi Xue’s Blog，原文链接　
 spark shuffle 做了什么事情?shuffle是指 map 任务和 task 任务之间的流程。在后文我们提到 shuffling 都是指对数据做shuffle 的处理。
-为什么数据需要 shuffle?我们首先来举个例子说明。假如
+为什么数据需要 shuffle?我们首先来举个例子说明。假如我们需要统计美国各个州中每一个社区的GDP。那么我们最终的结果应该类似于 (Manhattan -&
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -1175,7 +1185,8 @@ spark shuffle 做了什么事情?shuffle是指 map 任务和 task 任务之间�
       
         
           
-          git 是作为一名程序员必不可少的工具。它能帮助你更好的管理你的代码。既保证了你的代码不丢失，又能保证能够第一时间获取到其他同事更新的代码。这两个作用我认为是 git 在我们的日常工作中最重要的能力。写这篇文章是想记录自己从一个只会 git pull &amp; git push 的小白变成能够熟练
+          git 是作为一名程序员必不可少的工具。它能帮助你更好的管理你的代码。既保证了你的代码不丢失，又能保证能够第一时间获取到其他同事更新的代码。这两个作用我认为是 git 在我们的日常工作中最重要的能力。写这篇文章是想记录自己从一个只会 git pull &amp; git push 的小白变成能够熟练使用 git 各种命令的老鸟😋。
+本文是一个进阶命令的收集，因此阅读前请先掌握 git 的基本知识
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -1324,7 +1335,7 @@ spark shuffle 做了什么事情?shuffle是指 map 任务和 task 任务之间�
         
           
           今天主要讲一下Flink SQL 中怎样使用 UDF ，目前1.9版本可用的UDF包括Scalar Function 、 Table Function 、 Aggregateion Function 、 Table Aggregation Function。完整代码见仓库 -&gt; Github
-
+如果注册一个 UDF？注册的方法很简单，使用 TableEnvironment的registerFu
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -1474,7 +1485,7 @@ spark shuffle 做了什么事情?shuffle是指 map 任务和 task 任务之间�
           
           本文是为了记录项目搭建一个可用的 Hbase镜像的过程，由于项目中还有独立的kafka和zookeeper， 所以不能使用常见的集成zk的Hbase镜像，故手动搭建了一个。本文记录在整个搭建过程的Bug。
 最开始，在Docker hub 上面发现了一个镜像
-它已经做了standalone模式的hba
+它已经做了standalone模式的hbase，包含集成zk的版本以及外置zk的版本，所以首先尝试用他的这个镜像来实现，Docker-comp
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -1625,7 +1636,11 @@ spark shuffle 做了什么事情?shuffle是指 map 任务和 task 任务之间�
           本文是为基于Flink的商品推荐系统所搭建的Docker环境，目的为了方便体验项目，一键部署项目需要的所有环境，并预填充所需要的数据。完整的环境包括Zookeeper 、Kafka 、 Hbase 、 Mysql 、 Redis 、 Flink 。
 环境介绍：
 zookeeper 3.4.5
-kaf
+kafka 2.12-2.2.1
+hbase 1.5.0
+mysql 8.0.18
+redis
+flink
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -1794,7 +1809,7 @@ kaf
       <div class="footer-inner">
         <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 
-<div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+<div class="copyright">&copy; 2019 &mdash; <span itemprop="copyrightYear">2020</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>
